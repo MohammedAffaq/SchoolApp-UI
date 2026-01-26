@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, RefreshCw, Upload, Shield, GraduationCap, Users, Briefcase, X, Mail, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, RefreshCw, Shield, GraduationCap, Users, Briefcase, X, Mail, CheckCircle, Trash2 } from 'lucide-react';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('admin');
@@ -10,30 +11,6 @@ export default function HomePage() {
   const [captchaInput, setCaptchaInput] = useState('');
   const navigate = useNavigate();
   const [staffType, setStaffType] = useState('teaching');
-
-  // Initialize registered users immediately
-  const initializeUsers = () => {
-    try {
-      const existingUsers = localStorage.getItem('registeredUsers');
-      if (!existingUsers) {
-        // Start with empty object - users will register themselves
-        const defaultUsers = {};
-        localStorage.setItem('registeredUsers', JSON.stringify(defaultUsers));
-        console.log('✅ Fresh start - No users registered yet');
-        console.log('📝 Users can register on the SignUp page');
-      } else {
-        console.log('✅ Users already exist:', JSON.parse(existingUsers));
-      }
-    } catch (error) {
-      console.error('Error initializing users:', error);
-      localStorage.setItem('registeredUsers', JSON.stringify({}));
-    }
-  };
-
-  // Run initialization on first load
-  useEffect(() => {
-    initializeUsers();
-  }, []);
 
   // Generate random CAPTCHA
   const generateCaptcha = () => {
@@ -51,8 +28,35 @@ export default function HomePage() {
     generateCaptcha();
   }, []);
 
+  // Check if already logged in
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const userRole = localStorage.getItem('userRole');
+
+    if (isLoggedIn && userRole) {
+      if (userRole === 'admin') navigate('/admin');
+      else if (userRole === 'student') navigate('/student');
+      else if (userRole === 'parent') navigate('/parent');
+      else if (userRole === 'teacher') navigate('/teacher');
+      else if (userRole === 'staff') navigate('/staff');
+    }
+  }, [navigate]);
+
+  // Set parent data when parent tab is selected
+  useEffect(() => {
+    if (activeTab === 'parent') {
+      setParentData({
+        name: 'Jagannath k',
+        childName: 'Prajwal',
+        email: '',
+        password: '',
+
+      });
+    }
+  }, [activeTab]);
+
   // Admin Form
-  const [adminData, setAdminData] = useState({ email: '', password: '', rememberMe: false });
+  const [adminData, setAdminData] = useState({ email: '', password: '' });
 
   // Student Form
   const [studentData, setStudentData] = useState({
@@ -63,14 +67,14 @@ export default function HomePage() {
     phone: '',
     age: '',
     document: null,
-    rememberMe: false,
+
   });
 
   // Parent Form
-  const [parentData, setParentData] = useState({ name: '', email: '', password: '', rememberMe: false });
+  const [parentData, setParentData] = useState({ name: '', childName: '', email: '', password: '' });
 
   // Staff Form
-  const [staffData, setStaffData] = useState({ staffId: '', password: '', rememberMe: false });
+  const [staffData, setStaffData] = useState({ staffId: '', password: '' });
 
   // Forgot Password State
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -110,195 +114,158 @@ export default function HomePage() {
     setFpLoading(false);
   };
 
-  const validateLogin = (role, email, password) => {
-    let registeredUsers = {};
-    try {
-      registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-    } catch (error) {
-      console.error('Error parsing registered users:', error);
-      registeredUsers = {};
-    }
-    
-    const userByRole = registeredUsers[role];
-    
-    console.log('🔐 Login Attempt:');
-    console.log('Role:', role);
-    console.log('Registered Users:', registeredUsers);
-    console.log('User by role:', userByRole);
-    
-    if (!userByRole) {
-      alert(`❌ No registered ${role} found.\n\n💡 Please go to SignUp page to register first!`);
+  const validateCaptcha = () => {
+    if (!captcha) {
+      alert('⚠️ CAPTCHA not loaded. Please refresh the page.');
       return false;
     }
-    
-    // Trim inputs to remove whitespace
-    const trimmedEmail = email.trim().toLowerCase();
-    const trimmedPassword = password.trim();
-    const registeredEmail = userByRole?.email?.trim().toLowerCase();
-    const registeredPassword = userByRole?.password?.trim();
-    
-    console.log('Input email:', trimmedEmail);
-    console.log('Stored email:', registeredEmail);
-    console.log('Password match:', registeredPassword === trimmedPassword);
-    
-    if (registeredEmail !== trimmedEmail) {
-      alert('❌ Invalid email address');
+    if (captchaInput.trim() === '') {
+      alert('⚠️ Please enter the CAPTCHA text');
       return false;
     }
-    
-    if (registeredPassword !== trimmedPassword) {
-      alert('❌ Invalid password');
+    if (captchaInput.trim() !== captcha) {
+      alert('❌ Invalid CAPTCHA. Please try again.');
+      generateCaptcha();
       return false;
     }
-    
+    if (!isRobot) {
+      alert('❌ Please verify you are not a robot');
+      return false;
+    }
     return true;
+  };
+
+  const performLogin = async (email, password, role, targetPath) => {
+    try {
+      // Check Local Storage first (for persistent browser-based demo)
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+      let localUser = null;
+
+      if (role === 'admin' && registeredUsers.admin) {
+        if (registeredUsers.admin.email === email.toLowerCase() && registeredUsers.admin.password === password) {
+          localUser = registeredUsers.admin;
+        }
+      }
+
+      if (localUser) {
+        localStorage.setItem('currentUser', JSON.stringify(localUser));
+        localStorage.setItem('userRole', localUser.role);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', `${localUser.firstName} ${localUser.lastName}`);
+
+        alert('✅ Login successful!');
+        navigate(targetPath);
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase(), password }),
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        const user = result.user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
+
+        alert('✅ Login successful!');
+        navigate(targetPath);
+      } else {
+        alert(`❌ Login failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('❌ Failed to connect to server. Please try again.');
+    }
   };
 
   const handleAdminSubmit = (e) => {
     e.preventDefault();
-    
-    if (!captcha) {
-      alert('⚠️ CAPTCHA not loaded. Please refresh the page.');
-      return;
-    }
-    
-    if (captchaInput.trim() === '') {
-      alert('⚠️ Please enter the CAPTCHA text');
-      return;
-    }
-    
-    if (captchaInput.trim() !== captcha) {
-      alert('❌ Invalid CAPTCHA. Please try again.');
-      generateCaptcha();
-      return;
-    }
-    
-    if (!isRobot) {
-      alert('❌ Please verify you are not a robot');
-      return;
-    }
-    
-    if (!validateLogin('admin', adminData.email, adminData.password)) {
-      return;
-    }
-    
-    localStorage.setItem('userRole', 'admin');
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', adminData.email);
-    alert('✅ Login successful!');
-    navigate('/admin');
+    if (!validateCaptcha()) return;
+    performLogin(adminData.email, adminData.password, 'admin', '/admin');
   };
 
   const handleStudentSubmit = (e) => {
     e.preventDefault();
-    
-    if (!captcha) {
-      alert('⚠️ CAPTCHA not loaded. Please refresh the page.');
-      return;
-    }
-    
-    if (captchaInput.trim() === '') {
-      alert('⚠️ Please enter the CAPTCHA text');
-      return;
-    }
-    
-    if (captchaInput.trim() !== captcha) {
-      alert('❌ Invalid CAPTCHA. Please try again.');
-      generateCaptcha();
-      return;
-    }
-    
-    if (!isRobot) {
-      alert('❌ Please verify you are not a robot');
-      return;
-    }
-    
-    if (!validateLogin('student', studentData.email, studentData.password)) {
-      return;
-    }
-    
-    localStorage.setItem('userRole', 'student');
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', studentData.email);
-    alert('✅ Login successful!');
-    navigate('/student');
+    if (!validateCaptcha()) return;
+    performLogin(studentData.email, studentData.password, 'student', '/student');
   };
 
   const handleParentSubmit = (e) => {
     e.preventDefault();
-    
-    if (!captcha) {
-      alert('⚠️ CAPTCHA not loaded. Please refresh the page.');
-      return;
-    }
-    
-    if (captchaInput.trim() === '') {
-      alert('⚠️ Please enter the CAPTCHA text');
-      return;
-    }
-    
-    if (captchaInput.trim() !== captcha) {
-      alert('❌ Invalid CAPTCHA. Please try again.');
-      generateCaptcha();
-      return;
-    }
-    
-    if (!isRobot) {
-      alert('❌ Please verify you are not a robot');
-      return;
-    }
-    
-    if (!validateLogin('parent', parentData.email, parentData.password)) {
-      return;
-    }
-    
-    localStorage.setItem('userRole', 'parent');
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', parentData.email);
-    alert('✅ Login successful!');
-    navigate('/parent');
+    if (!validateCaptcha()) return;
+    performLogin(parentData.email, parentData.password, 'parent', '/parent');
   };
 
   const handleStaffSubmit = (e) => {
     e.preventDefault();
-    
-    if (!captcha) {
-      alert('⚠️ CAPTCHA not loaded. Please refresh the page.');
-      return;
-    }
-    
-    if (captchaInput.trim() === '') {
-      alert('⚠️ Please enter the CAPTCHA text');
-      return;
-    }
-    
-    if (captchaInput.trim() !== captcha) {
-      alert('❌ Invalid CAPTCHA. Please try again.');
-      generateCaptcha();
-      return;
-    }
-    
-    if (!isRobot) {
-      alert('❌ Please verify you are not a robot');
-      return;
-    }
-    
-    if (!validateLogin('staff', staffData.staffId, staffData.password)) {
-      return;
-    }
-    
-    localStorage.setItem('userRole', 'staff');
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', staffData.staffId);
-    alert('✅ Login successful!');
-    navigate('/teacher');
+    if (!validateCaptcha()) return;
+    performLogin(staffData.staffId, staffData.password, 'staff', '/teacher');
   };
+
+  const handleResetSystem = () => {
+    if (window.confirm('⚠️ Are you sure you want to clear ALL registered users and system data? This cannot be undone.')) {
+      localStorage.clear();
+      // Re-initialize empty structure
+      localStorage.setItem('registeredUsers', JSON.stringify({}));
+      alert('✅ System reset complete. You can now register fresh users.');
+      window.location.reload();
+    }
+  };
+
+  const renderCaptcha = () => (
+    <div className="my-3 space-y-3">
+      {/* CAPTCHA Row */}
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-lg font-bold text-gray-800 bg-gray-100 px-3 py-2 rounded border">
+          {captcha}
+        </span>
+        <button
+          type="button"
+          onClick={generateCaptcha}
+          className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+          title="Refresh CAPTCHA"
+        >
+          <RefreshCw size={16} />
+        </button>
+        <input
+          type="text"
+          value={captchaInput}
+          onChange={(e) => setCaptchaInput(e.target.value)}
+          placeholder="Enter CAPTCHA"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          required
+        />
+      </div>
+
+      {/* Robot Checkbox */}
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={isRobot}
+          onChange={(e) => setIsRobot(e.target.checked)}
+          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+        />
+        <span className="text-sm text-gray-600">I'm not a robot</span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex h-screen w-full font-sans antialiased overflow-hidden bg-gray-50">
       {/* Left Section: Soft light blue to white gradient */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-center items-center relative bg-gradient-to-br from-blue-50 to-white p-12">
-        {/* EduMind logo at top-left corner */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-sky-50 via-white to-sky-100 items-center justify-center relative overflow-hidden">
+        {/* Decorative circles */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-sky-200/20 blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-200/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+
+        {/* Logo at top left */}
         <div className="absolute top-8 left-8">
           <img src="/assets/logo.png" alt="EduMind Logo" className="h-40 w-auto mb-2 object-contain animate-fadeInScale" />
         </div>
@@ -306,13 +273,13 @@ export default function HomePage() {
         {/* Illustration centered horizontally and vertically */}
         <div className="flex flex-col items-center max-w-lg">
           <div className="animate-float w-full flex justify-center">
-            <img 
-              src="/assets/Img01.png" 
-              alt="Education Illustration" 
-              className="w-[120%] max-w-none h-auto object-contain mb-8 hover:scale-105 transition-transform duration-500" 
+            <img
+              src="/assets/Img01.png"
+              alt="Education Illustration"
+              className="w-[120%] max-w-none h-auto object-contain mb-8 hover:scale-105 transition-transform duration-500"
             />
           </div>
-          
+
           {/* Tagline text */}
           <p className="text-xl text-gray-500 italic font-medium text-center leading-relaxed">
             "Seamlessly Connecting Students, Parents, and Educators"
@@ -322,6 +289,14 @@ export default function HomePage() {
 
       {/* Right Section: Login Card */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
+        <button
+          onClick={handleResetSystem}
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
+          title="Reset System Data (Clear All Users)"
+        >
+          <Trash2 size={20} />
+        </button>
+
         <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6 max-h-[95vh] overflow-y-auto">
           {/* Title & Subtitle */}
           <div className="text-center mb-8">
@@ -342,11 +317,10 @@ export default function HomePage() {
                   setActiveTab(role);
                   setIsRobot(false);
                 }}
-                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 capitalize flex flex-col sm:flex-row items-center justify-center gap-2 ${
-                  activeTab === role
-                    ? 'bg-white text-blue-600 shadow-md ring-1 ring-black/5 transform scale-[1.02]'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
-                }`}
+                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 capitalize flex flex-col sm:flex-row items-center justify-center gap-2 ${activeTab === role
+                  ? 'bg-white text-blue-600 shadow-md ring-1 ring-black/5 transform scale-[1.02]'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                  }`}
               >
                 {icon}
                 <span>{role}</span>
@@ -395,54 +369,12 @@ export default function HomePage() {
                 </div>
 
                 {/* CAPTCHA */}
-                <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex-1 bg-white border border-gray-300 rounded p-1.5 flex items-center justify-center font-mono font-bold text-lg text-blue-600 tracking-widest select-none shadow-sm">
-                      {captcha}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={generateCaptcha}
-                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Refresh CAPTCHA"
-                    >
-                      <RefreshCw size={18} className="text-gray-500" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                    placeholder="Enter CAPTCHA"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-2 text-sm"
-                  />
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isRobot}
-                      onChange={(e) => setIsRobot(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-600">I'm not a robot</span>
-                  </label>
-                </div>
-
-                <div className="flex items-center mb-2 mt-2">
-                  <input
-                    id="admin-remember"
-                    type="checkbox"
-                    checked={adminData.rememberMe}
-                    onChange={(e) => setAdminData({ ...adminData, rememberMe: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="admin-remember" className="ml-2 text-sm text-gray-600 cursor-pointer">Remember me</label>
-                </div>
+                {renderCaptcha()}
 
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   Login as Admin
                 </button>
@@ -489,128 +421,37 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={studentData.password}
-                        onChange={(e) => setStudentData({ ...studentData, password: e.target.value })}
-                        placeholder="••••••••"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 pr-10 text-sm"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-2.5 text-gray-400"
-                      >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={studentData.phone}
-                      onChange={(e) => setStudentData({ ...studentData, phone: e.target.value })}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* DOB and Age */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                    <input
-                      type="date"
-                      value={studentData.dob}
-                      onChange={(e) => setStudentData({ ...studentData, dob: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                    <input
-                      type="number"
-                      value={studentData.age}
-                      onChange={(e) => setStudentData({ ...studentData, age: e.target.value })}
-                      placeholder="Age"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* Document Upload */}
+                {/* Password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload Document</label>
-                  <label className="flex items-center justify-center w-full px-4 py-2 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors">
-                    <Upload size={16} className="text-blue-600 mr-2" />
-                    <span className="text-xs text-gray-600">Upload file</span>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <div className="relative">
                     <input
-                      type="file"
-                      onChange={(e) => setStudentData({ ...studentData, document: e.target.files[0] })}
-                      className="hidden"
+                      type={showPassword ? 'text' : 'password'}
+                      value={studentData.password}
+                      onChange={(e) => setStudentData({ ...studentData, password: e.target.value })}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 pr-10 text-sm"
+                      required
                     />
-                  </label>
-                </div>
-
-                {/* CAPTCHA */}
-                <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Security Check</label>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 bg-white border border-gray-300 rounded p-1.5 flex items-center justify-center font-mono font-bold text-lg text-blue-600 tracking-widest select-none shadow-sm">
-                      {captcha}
-                    </div>
                     <button
                       type="button"
-                      onClick={generateCaptcha}
-                      className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Refresh CAPTCHA"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-2.5 text-gray-400"
                     >
-                      <RefreshCw size={16} className="text-gray-500" />
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  <input
-                    type="text"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                    placeholder="Enter CAPTCHA"
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-2 text-sm"
-                  />
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isRobot}
-                      onChange={(e) => setIsRobot(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-xs text-gray-600">I'm not a robot</span>
-                  </label>
                 </div>
 
-                <div className="flex items-center mb-2 mt-2">
-                  <input
-                    id="student-remember"
-                    type="checkbox"
-                    checked={studentData.rememberMe}
-                    onChange={(e) => setStudentData({ ...studentData, rememberMe: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="student-remember" className="ml-2 text-xs text-gray-600 cursor-pointer">Remember me</label>
-                </div>
+
+
+                {/* CAPTCHA */}
+                {renderCaptcha()}
 
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   Login as Student
                 </button>
@@ -628,18 +469,20 @@ export default function HomePage() {
             {activeTab === 'parent' && (
               <form onSubmit={handleParentSubmit} className="space-y-2 animate-fadeIn">
                 <div>
-                  {/* Name
+                  {/* Parent Name */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Parent Name</label>
                     <input
                       type="text"
                       value={parentData.name}
                       onChange={(e) => setParentData({ ...parentData, name: e.target.value })}
-                      placeholder="Enter your full name"
+                      placeholder="Enter parent name"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
                       required
                     />
-                  </div> */}
+                  </div>
+
+
 
                   {/* Email */}
                   <div>
@@ -648,7 +491,7 @@ export default function HomePage() {
                       type="email"
                       value={parentData.email}
                       onChange={(e) => setParentData({ ...parentData, email: e.target.value })}
-                      placeholder="parent@edumind.com"
+                      placeholder="Enter your email"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                       required
                     />
@@ -678,54 +521,12 @@ export default function HomePage() {
                 </div>
 
                 {/* CAPTCHA */}
-                <div className="border border-gray-200 rounded-lg p-2 bg-gray-50 mt-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 bg-white border border-gray-300 rounded p-2 flex items-center justify-center font-mono font-bold text-lg text-blue-600 tracking-widest select-none shadow-sm">
-                      {captcha}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={generateCaptcha}
-                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Refresh CAPTCHA"
-                    >
-                      <RefreshCw size={18} className="text-gray-500" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                    placeholder="Enter CAPTCHA"
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-2 text-sm"
-                  />
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isRobot}
-                      onChange={(e) => setIsRobot(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-600">I'm not a robot</span>
-                  </label>
-                </div>
-
-                <div className="flex items-center mb-2 mt-2">
-                  <input
-                    id="parent-remember"
-                    type="checkbox"
-                    checked={parentData.rememberMe}
-                    onChange={(e) => setParentData({ ...parentData, rememberMe: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="parent-remember" className="ml-2 text-sm text-gray-600 cursor-pointer">Remember me</label>
-                </div>
+                {renderCaptcha()}
 
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   Login as Parent
                 </button>
@@ -797,54 +598,14 @@ export default function HomePage() {
                 </div>
 
                 {/* CAPTCHA */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="flex-1 bg-white border border-gray-300 rounded p-3 flex items-center justify-center font-mono font-bold text-xl text-blue-600 tracking-widest select-none shadow-sm">
-                      {captcha}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={generateCaptcha}
-                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Refresh CAPTCHA"
-                    >
-                      <RefreshCw size={18} className="text-gray-500" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                    placeholder="Enter CAPTCHA"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-2 text-sm"
-                  />
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isRobot}
-                      onChange={(e) => setIsRobot(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-600">I'm not a robot</span>
-                  </label>
-                </div>
+                {renderCaptcha()}
 
-                <div className="flex items-center mb-2 mt-2">
-                  <input
-                    id="staff-remember"
-                    type="checkbox"
-                    checked={staffData.rememberMe}
-                    onChange={(e) => setStaffData({ ...staffData, rememberMe: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="staff-remember" className="ml-2 text-sm text-gray-600 cursor-pointer">Remember me</label>
-                </div>
+
 
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   Login as Staff
                 </button>
@@ -861,15 +622,21 @@ export default function HomePage() {
 
           {/* Footer */}
           <div className="text-center text-xs text-gray-500 mt-2 pt-4 border-t border-gray-100">
-            <p className="text-gray-600">
-              Don't have an account? 
-              <button 
-                onClick={() => navigate('/signup-page')}
-                className="ml-2 text-blue-600 hover:text-blue-700 font-medium underline"
-              >
-                Sign up
-              </button>
-            </p>
+            {activeTab === 'admin' ? (
+              <p className="text-gray-600">
+                Don't have an account?
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="ml-2 text-blue-600 hover:text-blue-700 font-medium underline"
+                >
+                  Admin Sign up
+                </button>
+              </p>
+            ) : (
+              <p className="text-gray-600">
+                Don't have an account? <span className="font-medium text-gray-700">Contact Administrator to register.</span>
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -878,13 +645,13 @@ export default function HomePage() {
       {showForgotPasswordModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-fadeInScale">
-            <button 
+            <button
               onClick={closeForgotPasswordModal}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={24} />
             </button>
-            
+
             <div className="p-8">
               {fpSubmitted ? (
                 <div className="text-center">
@@ -895,7 +662,7 @@ export default function HomePage() {
                   <p className="text-gray-600 mb-6">
                     We've sent a password reset link to <strong>{fpEmail}</strong>
                   </p>
-                  <button 
+                  <button
                     onClick={closeForgotPasswordModal}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all"
                   >
@@ -925,11 +692,10 @@ export default function HomePage() {
                           if (fpErrors.email) setFpErrors({});
                         }}
                         placeholder="Enter your email"
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                          fpErrors.email 
-                            ? 'border-red-500 focus:ring-red-200' 
-                            : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all ${fpErrors.email
+                          ? 'border-red-500 focus:ring-red-200'
+                          : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                          }`}
                       />
                       {fpErrors.email && (
                         <p className="text-red-500 text-xs mt-1">{fpErrors.email}</p>
@@ -939,9 +705,8 @@ export default function HomePage() {
                     <button
                       type="submit"
                       disabled={fpLoading}
-                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all ${
-                        fpLoading ? 'opacity-70 cursor-not-allowed' : ''
-                      }`}
+                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all ${fpLoading ? 'opacity-70 cursor-not-allowed' : ''
+                        }`}
                     >
                       {fpLoading ? 'Sending...' : 'Send Reset Link'}
                     </button>

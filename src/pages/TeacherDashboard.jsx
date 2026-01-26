@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, UserMinus } from 'lucide-react';
 
 export default function TeacherDashboard() {
   const [staffType, setStaffType] = useState('teaching');
+  const [showAddRequestModal, setShowAddRequestModal] = useState(false);
+  const [showDeleteRequestModal, setShowDeleteRequestModal] = useState(false);
+  const [newStudentRequest, setNewStudentRequest] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    rollNumber: '',
+    className: '',
+    reason: ''
+  });
+  const [deleteStudentRequest, setDeleteStudentRequest] = useState({
+    studentId: '',
+    reason: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     try {
@@ -109,11 +126,10 @@ export default function TeacherDashboard() {
                         <p className="font-semibold text-gray-900">{item.title}</p>
                         <p className="text-sm text-gray-600">{item.department}</p>
                       </div>
-                      <span className={`text-xs font-bold px-2 py-1 rounded ${
-                        item.priority === 'High' ? 'bg-red-100 text-red-800' :
-                        item.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${item.priority === 'High' ? 'bg-red-100 text-red-800' :
+                          item.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                        }`}>
                         {item.priority}
                       </span>
                     </div>
@@ -250,6 +266,40 @@ export default function TeacherDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Student Management Requests */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Student Management</h2>
+          <p className="text-gray-600 mb-6">Request to add or remove students from your classes. All requests require admin approval.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              onClick={() => setShowAddRequestModal(true)}
+              className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              <div className="p-2 bg-green-500 rounded-lg">
+                <Plus className="text-white" size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-green-800">Add New Student</p>
+                <p className="text-sm text-green-600">Request to enroll a new student</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setShowDeleteRequestModal(true)}
+              className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <div className="p-2 bg-red-500 rounded-lg">
+                <UserMinus className="text-white" size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-red-800">Remove Student</p>
+                <p className="text-sm text-red-600">Request to remove a student</p>
+              </div>
+            </button>
           </div>
         </div>
       </div>

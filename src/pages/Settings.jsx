@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   Menu,
@@ -22,10 +21,10 @@ import {
 
 const Settings = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
-  
+
   // Settings State
   const [generalSettings, setGeneralSettings] = useState({
     schoolName: 'EduMind High School',
@@ -60,6 +59,8 @@ const Settings = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
@@ -89,7 +90,6 @@ const Settings = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<SettingsIcon size={20} />} label="Settings" active onClick={() => navigate('/admin/settings')} />
         </nav>
 
@@ -106,7 +106,7 @@ const Settings = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -151,7 +151,7 @@ const Settings = ({ onLogout }) => {
         {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto p-8 bg-slate-100">
           <div className="max-w-4xl mx-auto">
-            
+
             {/* Tabs */}
             <div className="flex space-x-1 bg-white p-1 rounded-xl shadow-sm mb-6 w-fit">
               <TabButton active={activeTab === 'general'} onClick={() => setActiveTab('general')} icon={<School size={18} />} label="School Info" />
@@ -161,25 +161,25 @@ const Settings = ({ onLogout }) => {
 
             {/* Content Area */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-              
+
               {/* General Settings */}
               {activeTab === 'general' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-4">School Information</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup label="School Name" value={generalSettings.schoolName} onChange={(v) => setGeneralSettings({...generalSettings, schoolName: v})} />
-                    <InputGroup label="Official Email" value={generalSettings.email} onChange={(v) => setGeneralSettings({...generalSettings, email: v})} />
-                    <InputGroup label="Contact Phone" value={generalSettings.phone} onChange={(v) => setGeneralSettings({...generalSettings, phone: v})} />
-                    <InputGroup label="Website" value={generalSettings.website} onChange={(v) => setGeneralSettings({...generalSettings, website: v})} />
+                    <InputGroup label="School Name" value={generalSettings.schoolName} onChange={(v) => setGeneralSettings({ ...generalSettings, schoolName: v })} />
+                    <InputGroup label="Official Email" value={generalSettings.email} onChange={(v) => setGeneralSettings({ ...generalSettings, email: v })} />
+                    <InputGroup label="Contact Phone" value={generalSettings.phone} onChange={(v) => setGeneralSettings({ ...generalSettings, phone: v })} />
+                    <InputGroup label="Website" value={generalSettings.website} onChange={(v) => setGeneralSettings({ ...generalSettings, website: v })} />
                     <div className="md:col-span-2">
-                      <InputGroup label="Address" value={generalSettings.address} onChange={(v) => setGeneralSettings({...generalSettings, address: v})} />
+                      <InputGroup label="Address" value={generalSettings.address} onChange={(v) => setGeneralSettings({ ...generalSettings, address: v })} />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Current Academic Year</label>
-                      <select 
+                      <select
                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                         value={generalSettings.academicYear}
-                        onChange={(e) => setGeneralSettings({...generalSettings, academicYear: e.target.value})}
+                        onChange={(e) => setGeneralSettings({ ...generalSettings, academicYear: e.target.value })}
                       >
                         <option>2023-2024</option>
                         <option>2024-2025</option>
@@ -195,32 +195,32 @@ const Settings = ({ onLogout }) => {
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-4">System Configuration</h2>
                   <div className="space-y-4">
-                    <ToggleSwitch 
-                      label="Allow Student Registration" 
-                      desc="Enable or disable public registration for students" 
-                      checked={systemSettings.allowRegistration} 
-                      onChange={() => setSystemSettings({...systemSettings, allowRegistration: !systemSettings.allowRegistration})} 
+                    <ToggleSwitch
+                      label="Allow Student Registration"
+                      desc="Enable or disable public registration for students"
+                      checked={systemSettings.allowRegistration}
+                      onChange={() => setSystemSettings({ ...systemSettings, allowRegistration: !systemSettings.allowRegistration })}
                     />
-                    <ToggleSwitch 
-                      label="Maintenance Mode" 
-                      desc="Put the system in maintenance mode (only admins can login)" 
-                      checked={systemSettings.maintenanceMode} 
-                      onChange={() => setSystemSettings({...systemSettings, maintenanceMode: !systemSettings.maintenanceMode})} 
+                    <ToggleSwitch
+                      label="Maintenance Mode"
+                      desc="Put the system in maintenance mode (only admins can login)"
+                      checked={systemSettings.maintenanceMode}
+                      onChange={() => setSystemSettings({ ...systemSettings, maintenanceMode: !systemSettings.maintenanceMode })}
                     />
                     <div className="border-t border-gray-100 pt-4 mt-4">
                       <h3 className="font-semibold text-gray-900 mb-3">Backup Settings</h3>
-                      <ToggleSwitch 
-                        label="Automatic Daily Backup" 
-                        desc="Backup database every night at 00:00" 
-                        checked={systemSettings.autoBackup} 
-                        onChange={() => setSystemSettings({...systemSettings, autoBackup: !systemSettings.autoBackup})} 
+                      <ToggleSwitch
+                        label="Automatic Daily Backup"
+                        desc="Backup database every night at 00:00"
+                        checked={systemSettings.autoBackup}
+                        onChange={() => setSystemSettings({ ...systemSettings, autoBackup: !systemSettings.autoBackup })}
                       />
                       <div className="mt-3">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Backup Frequency</label>
-                        <select 
+                        <select
                           className="w-full md:w-1/2 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                           value={systemSettings.backupFrequency}
-                          onChange={(e) => setSystemSettings({...systemSettings, backupFrequency: e.target.value})}
+                          onChange={(e) => setSystemSettings({ ...systemSettings, backupFrequency: e.target.value })}
                         >
                           <option value="daily">Daily</option>
                           <option value="weekly">Weekly</option>
@@ -243,7 +243,7 @@ const Settings = ({ onLogout }) => {
                         <div>
                           <h3 className="font-bold text-blue-900">Admin Password</h3>
                           <p className="text-sm text-blue-700 mt-1">Ensure your admin account has a strong password.</p>
-                          <button 
+                          <button
                             onClick={() => alert('Change Password functionality coming soon!')}
                             className="mt-3 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors"
                           >
@@ -253,20 +253,20 @@ const Settings = ({ onLogout }) => {
                       </div>
                     </div>
 
-                    <ToggleSwitch 
-                      label="Two-Factor Authentication (2FA)" 
-                      desc="Require 2FA for all admin logins" 
-                      checked={securitySettings.twoFactor} 
-                      onChange={() => setSecuritySettings({...securitySettings, twoFactor: !securitySettings.twoFactor})} 
+                    <ToggleSwitch
+                      label="Two-Factor Authentication (2FA)"
+                      desc="Require 2FA for all admin logins"
+                      checked={securitySettings.twoFactor}
+                      onChange={() => setSecuritySettings({ ...securitySettings, twoFactor: !securitySettings.twoFactor })}
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Session Timeout (Minutes)</label>
-                        <select 
+                        <select
                           className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                           value={securitySettings.sessionTimeout}
-                          onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: e.target.value})}
+                          onChange={(e) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
                         >
                           <option value="15">15 Minutes</option>
                           <option value="30">30 Minutes</option>
@@ -276,10 +276,10 @@ const Settings = ({ onLogout }) => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Password Expiry (Days)</label>
-                        <select 
+                        <select
                           className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                           value={securitySettings.passwordExpiry}
-                          onChange={(e) => setSecuritySettings({...securitySettings, passwordExpiry: e.target.value})}
+                          onChange={(e) => setSecuritySettings({ ...securitySettings, passwordExpiry: e.target.value })}
                         >
                           <option value="30">30 Days</option>
                           <option value="60">60 Days</option>
@@ -294,7 +294,7 @@ const Settings = ({ onLogout }) => {
 
               {/* Save Button */}
               <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">
-                <button 
+                <button
                   onClick={handleSave}
                   className="bg-sky-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-sky-700 transition-colors flex items-center gap-2 shadow-sm"
                 >
@@ -325,9 +325,8 @@ const NavItem = ({ icon, label, active, onClick }) => (
 const TabButton = ({ active, onClick, icon, label }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-      active ? 'bg-sky-100 text-sky-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-    }`}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${active ? 'bg-sky-100 text-sky-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+      }`}
   >
     {icon}
     {label}
@@ -354,14 +353,12 @@ const ToggleSwitch = ({ label, desc, checked, onChange }) => (
     </div>
     <button
       onClick={onChange}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 ${
-        checked ? 'bg-sky-600' : 'bg-gray-200'
-      }`}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 ${checked ? 'bg-sky-600' : 'bg-gray-200'
+        }`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-          checked ? 'translate-x-6' : 'translate-x-1'
-        }`}
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-6' : 'translate-x-1'
+          }`}
       />
     </button>
   </div>

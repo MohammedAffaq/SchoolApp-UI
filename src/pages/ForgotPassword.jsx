@@ -154,10 +154,10 @@ export default function ForgotPassword() {
             Remember Your Password? Login
           </button>
           <button
-            onClick={() => navigate('/signup-page')}
+            onClick={() => navigate('/signup')}
             className="w-full py-3 px-4 rounded-lg font-semibold text-green-600 bg-green-50 hover:bg-green-100 transition"
           >
-            Don't Have Account? Register
+            Don't Have Account? Admin Register
           </button>
         </div>
 

@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   ChevronLeft,
@@ -19,7 +18,7 @@ import {
 
 const CalendarPage = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentYear, setCurrentYear] = useState(2026);
 
@@ -34,6 +33,8 @@ const CalendarPage = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
@@ -69,14 +70,13 @@ const CalendarPage = ({ onLogout }) => {
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday = new Date().getFullYear() === currentYear &&
-                     new Date().getMonth() === monthIndex &&
-                     new Date().getDate() === day;
+        new Date().getMonth() === monthIndex &&
+        new Date().getDate() === day;
       days.push(
         <div
           key={day}
-          className={`h-8 w-8 flex items-center justify-center text-sm rounded-full cursor-pointer hover:bg-indigo-100 transition-colors ${
-            isToday ? 'bg-indigo-600 text-white font-bold' : 'text-gray-700'
-          }`}
+          className={`h-8 w-8 flex items-center justify-center text-sm rounded-full cursor-pointer hover:bg-indigo-100 transition-colors ${isToday ? 'bg-indigo-600 text-white font-bold' : 'text-gray-700'
+            }`}
         >
           {day}
         </div>
@@ -116,7 +116,6 @@ const CalendarPage = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 

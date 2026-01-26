@@ -1,0 +1,100 @@
+[
+  {
+    "id": "1769128774399",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$VGRDa84PvXt3sHi03LYcX.kUT8nWBsn82Yq9DAAyAH25WZje0iCiW",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T00:39:34.399Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  },
+  {
+    "id": "1769128897161",
+    "firstName": "vaishnavi",
+    "lastName": "k",
+    "email": "kvaishnavi282003@gmail.com",
+    "role": "admin",
+    "password": "$2b$10$mme1cJBz5ifHa.FR01CEPObBIvzrymXuiuQ5cDH9UgOqQ2tejoV1u",
+    "isFirstLogin": false,
+    "createdAt": "2026-01-23T00:41:37.161Z",
+    "status": "active"
+  },
+  {
+    "id": "1769128945795",
+    "firstName": "jagannath ",
+    "lastName": "k",
+    "email": "laptopfreehp@gmail.com",
+    "role": "parent",
+    "password": "$2b$10$DmQINEs2hmGUbATjXdaAXeci6wLmfWNFmZeLb02PULDYTeyqXG6X6",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T00:42:25.795Z",
+    "status": "active",
+    "children": [
+      {
+        "name": "PRAJWAL",
+        "grade": "Grade 8"
+      },
+      {
+        "name": "PRAVEEN",
+        "grade": "Grade 10"
+      }
+    ],
+    "relationship": "Father"
+  },
+  {
+    "id": "1769138449053",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$6Cd5qWBQKK62pOYdXvwTHe9ADNwzs4LBWAFR/b3JoCOTlasJj706O",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T03:20:49.053Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  },
+  {
+    "id": "1769157798399",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$ReW.iUAkKjkZhZ3DOTfUGeo0XFmreRtcXvTl/Kj0RzUWwMx9Vnz/C",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T08:43:18.399Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  },
+  {
+    "id": "1769167220217",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$A1GZnuNcPLUR4OzskrMyGuP2i091r21WQV4.MdpZiHO4IeziROUcy",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T11:20:20.217Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  },
+  {
+    "id": "1769170853417",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$WZarT6S4C0aYGXyQEXeFKOgnjNkJSen.d92EwCV9I5kzjL/EokP66",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-23T12:20:53.417Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  }
+]

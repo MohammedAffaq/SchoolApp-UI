@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, X, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function UserManagement() {
   const navigate = useNavigate();
@@ -41,9 +41,9 @@ export default function UserManagement() {
   const [showPassword, setShowPassword] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
 
-  // Load users from localStorage on mount
+  // Load users from API on mount
   useEffect(() => {
-    loadUsers();
+    loadUsersFromAPI();
   }, []);
 
   // Filter users when search term or role filter changes
@@ -51,17 +51,20 @@ export default function UserManagement() {
     filterUsers();
   }, [searchTerm, roleFilter, users]);
 
-  const loadUsers = () => {
-    const storedUsers = localStorage.getItem('edumind_users');
-    if (storedUsers) {
-      try {
-        const parsedUsers = JSON.parse(storedUsers);
-        setUsers(parsedUsers);
-      } catch (e) {
+  const loadUsersFromAPI = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users');
+      const result = await response.json();
+
+      if (result.success) {
+        setUsers(result.users);
+      } else {
+        console.error('Failed to load users:', result.error);
         setUsers([]);
       }
-    } else {
-      // Add some demo users
+    } catch (error) {
+      console.error('Error loading users:', error);
+      // Fallback to demo users if API is not available
       const demoUsers = [
         {
           id: 1,
@@ -101,7 +104,6 @@ export default function UserManagement() {
         },
       ];
       setUsers(demoUsers);
-      localStorage.setItem('edumind_users', JSON.stringify(demoUsers));
     }
   };
 
@@ -152,6 +154,10 @@ export default function UserManagement() {
       if (!formData.relationship.trim()) errors.relationship = 'Relationship is required';
     }
 
+    if (formData.role === 'staff') {
+      if (!formData.designation.trim()) errors.designation = 'Designation is required';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -197,24 +203,36 @@ export default function UserManagement() {
     if (!validateForm()) return;
 
     setSubmitLoading(true);
-    setTimeout(() => {
-      const newUser = {
-        ...formData,
-        id: Date.now(),
-      };
 
-      const updatedUsers = [...users, newUser];
-      setUsers(updatedUsers);
-      localStorage.setItem('edumind_users', JSON.stringify(updatedUsers));
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-      setSuccessMessage('User added successfully!');
-      setTimeout(() => {
-        setShowAddModal(false);
-        setSuccessMessage('');
-        resetForm();
-      }, 1500);
-      setSubmitLoading(false);
-    }, 1000);
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccessMessage('User registered successfully! Email sent with login credentials.');
+        // Reload users from API
+        loadUsersFromAPI();
+        setTimeout(() => {
+          setShowAddModal(false);
+          setSuccessMessage('');
+          resetForm();
+        }, 2000);
+      } else {
+        setFormErrors({ general: result.error || 'Failed to register user' });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setFormErrors({ general: 'Failed to connect to server. Please try again.' });
+    }
+
+    setSubmitLoading(false);
   };
 
   const handleEditUser = async (e) => {
@@ -324,8 +342,9 @@ export default function UserManagement() {
           >
             <option value="all">All Roles</option>
             <option value="student">Students</option>
-            <option value="teacher">Teachers</option>
             <option value="parent">Parents</option>
+            <option value="teacher">Teachers / Staff</option>
+            <option value="staff">Non-Staff</option>
           </select>
 
           {/* Add User Button */}
@@ -364,9 +383,8 @@ export default function UserManagement() {
                 {filteredUsers.map((user, index) => (
                   <tr
                     key={user.id}
-                    className={`border-b border-slate-200 hover:bg-slate-50 transition ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
-                    }`}
+                    className={`border-b border-slate-200 hover:bg-slate-50 transition ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+                      }`}
                   >
                     <td className="px-6 py-4">
                       <div>
@@ -468,11 +486,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, firstName: e.target.value });
                         if (formErrors.firstName) setFormErrors({ ...formErrors, firstName: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.firstName
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.firstName
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                           : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                        }`}
                       placeholder="First name"
                     />
                     {formErrors.firstName && <p className="text-red-600 text-sm mt-1">{formErrors.firstName}</p>}
@@ -488,11 +505,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, lastName: e.target.value });
                         if (formErrors.lastName) setFormErrors({ ...formErrors, lastName: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.lastName
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.lastName
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                           : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                        }`}
                       placeholder="Last name"
                     />
                     {formErrors.lastName && <p className="text-red-600 text-sm mt-1">{formErrors.lastName}</p>}
@@ -508,11 +524,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, email: e.target.value });
                         if (formErrors.email) setFormErrors({ ...formErrors, email: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.email
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.email
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                           : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                        }`}
                       placeholder="email@school.com"
                     />
                     {formErrors.email && <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>}
@@ -528,11 +543,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, phone: e.target.value });
                         if (formErrors.phone) setFormErrors({ ...formErrors, phone: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.phone
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.phone
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                           : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                        }`}
                       placeholder="9876543210"
                     />
                     {formErrors.phone && <p className="text-red-600 text-sm mt-1">{formErrors.phone}</p>}
@@ -547,15 +561,15 @@ export default function UserManagement() {
                         setFormData({ ...formData, role: e.target.value });
                         if (formErrors.role) setFormErrors({ ...formErrors, role: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.role
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.role
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                           : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                        }`}
                     >
                       <option value="student">Student</option>
-                      <option value="teacher">Teacher</option>
                       <option value="parent">Parent</option>
+                      <option value="teacher">Teacher / Staff</option>
+                      <option value="staff">Non-Staff</option>
                     </select>
                     {formErrors.role && <p className="text-red-600 text-sm mt-1">{formErrors.role}</p>}
                   </div>
@@ -589,11 +603,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, rollNumber: e.target.value });
                           if (formErrors.rollNumber) setFormErrors({ ...formErrors, rollNumber: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.rollNumber
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.rollNumber
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                         placeholder="STU001"
                       />
                       {formErrors.rollNumber && <p className="text-red-600 text-sm mt-1">{formErrors.rollNumber}</p>}
@@ -608,11 +621,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, className: e.target.value });
                           if (formErrors.className) setFormErrors({ ...formErrors, className: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.className
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.className
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                         placeholder="10-A"
                       />
                       {formErrors.className && <p className="text-red-600 text-sm mt-1">{formErrors.className}</p>}
@@ -634,11 +646,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, designation: e.target.value });
                           if (formErrors.designation) setFormErrors({ ...formErrors, designation: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.designation
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.designation
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                         placeholder="Math Teacher"
                       />
                       {formErrors.designation && <p className="text-red-600 text-sm mt-1">{formErrors.designation}</p>}
@@ -653,11 +664,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, subject: e.target.value });
                           if (formErrors.subject) setFormErrors({ ...formErrors, subject: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.subject
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.subject
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                         placeholder="Mathematics"
                       />
                       {formErrors.subject && <p className="text-red-600 text-sm mt-1">{formErrors.subject}</p>}
@@ -679,11 +689,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, childName: e.target.value });
                           if (formErrors.childName) setFormErrors({ ...formErrors, childName: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.childName
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.childName
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                         placeholder="Student name"
                       />
                       {formErrors.childName && <p className="text-red-600 text-sm mt-1">{formErrors.childName}</p>}
@@ -697,11 +706,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, relationship: e.target.value });
                           if (formErrors.relationship) setFormErrors({ ...formErrors, relationship: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.relationship
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.relationship
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                             : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                          }`}
                       >
                         <option value="">Select relationship</option>
                         <option value="Mother">Mother</option>
@@ -709,6 +717,31 @@ export default function UserManagement() {
                         <option value="Guardian">Guardian</option>
                       </select>
                       {formErrors.relationship && <p className="text-red-600 text-sm mt-1">{formErrors.relationship}</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.role === 'staff' && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">Staff Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Designation *</label>
+                      <input
+                        type="text"
+                        value={formData.designation}
+                        onChange={(e) => {
+                          setFormData({ ...formData, designation: e.target.value });
+                          if (formErrors.designation) setFormErrors({ ...formErrors, designation: '' });
+                        }}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.designation
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
+                        placeholder="Librarian, Accountant, etc."
+                      />
+                      {formErrors.designation && <p className="text-red-600 text-sm mt-1">{formErrors.designation}</p>}
                     </div>
                   </div>
                 </div>

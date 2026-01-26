@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   Menu,
@@ -19,8 +18,9 @@ import {
 
 const ModernAdminDashboard = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
 
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -45,6 +45,8 @@ const ModernAdminDashboard = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
         if (registeredUsers.admin && registeredUsers.admin.profileImage) {
           setProfileImage(registeredUsers.admin.profileImage);
@@ -61,6 +63,14 @@ const ModernAdminDashboard = ({ onLogout }) => {
     setRecentActivities([]);
   };
 
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    onLogout();
+  };
 
 
   // Calendar Logic
@@ -90,7 +100,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
     if (month === 9 && day === 2) events.push({ type: 'holiday', title: "Gandhi Jayanti" });
     if (month === 9 && day === 31) events.push({ type: 'holiday', title: "Halloween" });
     if (month === 11 && day === 25) events.push({ type: 'holiday', title: "Christmas" });
-    
+
     // Mock Exams/Meetings
     if (day === 15) events.push({ type: 'exam', title: "Mid-term Exams" });
     if (day === 20) events.push({ type: 'meeting', title: "PTA Meeting" });
@@ -119,13 +129,12 @@ const ModernAdminDashboard = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
         <div className="p-4 border-t border-gray-100">
           <button
-            onClick={onLogout}
+            onClick={handleLogoutClick}
             className="flex items-center gap-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full p-3 rounded-xl transition-colors duration-200 font-medium"
           >
             <LogOut size={20} />
@@ -182,12 +191,32 @@ const ModernAdminDashboard = ({ onLogout }) => {
             {/* Welcome Section */}
             <div className="bg-white rounded-2xl p-8 shadow-sm">
               <h2 className="text-2xl font-bold mb-4 text-gray-900">Welcome back, {adminName}!</h2>
-              <button 
-                onClick={() => navigate('/admin/analytics')}
-                className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-              >
-                View Reports
-              </button>
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => navigate('/admin/analytics')}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  View Reports
+                </button>
+                <button
+                  onClick={() => navigate('/admin/students')}
+                  className="bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                >
+                  Add Student
+                </button>
+                <button
+                  onClick={() => navigate('/admin/teachers')}
+                  className="bg-purple-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-purple-700 transition-colors"
+                >
+                  Add Staff
+                </button>
+                <button
+                  onClick={() => navigate('/admin/parents')}
+                  className="bg-orange-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-orange-700 transition-colors"
+                >
+                  Add Parent
+                </button>
+              </div>
             </div>
 
             {/* KPI Cards Row */}
@@ -355,13 +384,13 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   {Array.from({ length: getFirstDayOfMonth(calendarDate) }).map((_, i) => (
                     <div key={`empty-${i}`} className="p-2"></div>
                   ))}
-                  
+
                   {/* Days of the month */}
                   {Array.from({ length: getDaysInMonth(calendarDate) }, (_, i) => {
                     const day = i + 1;
                     const events = getEventsForDay(day, calendarDate.getMonth(), calendarDate.getFullYear());
                     const isToday = new Date().toDateString() === new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day).toDateString();
-                    
+
                     let bgClass = 'hover:bg-gray-50 text-gray-700';
                     if (isToday) bgClass = 'bg-indigo-100 text-indigo-700 font-bold border border-indigo-200';
                     else if (events.some(e => e.type === 'holiday')) bgClass = 'bg-red-50 text-red-700 font-medium';
@@ -447,6 +476,33 @@ const ModernAdminDashboard = ({ onLogout }) => {
           </div>
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <LogOut className="text-red-600" size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Logout?</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to logout from your account?</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -465,11 +521,10 @@ const NavItem = ({ icon, label, active, onClick }) => (
 const SubNavItem = ({ label, onClick, active }) => (
   <button
     onClick={onClick}
-    className={`flex items-center w-full pl-14 pr-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-      active
+    className={`flex items-center w-full pl-14 pr-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${active
         ? 'text-sky-600 font-bold bg-sky-50'
         : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-    }`}
+      }`}
   >
     <span className={`w-1.5 h-1.5 rounded-full mr-3 ${active ? 'bg-sky-600' : 'bg-gray-300'}`}></span>
     {label}

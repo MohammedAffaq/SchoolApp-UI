@@ -7,11 +7,9 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Search,
   Bell,
-  BarChart3,
   PieChart,
   Menu,
   Settings,
@@ -20,13 +18,12 @@ import {
 
 const AnalyticsPage = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = React.useState('Admin User');
+  const [adminName, setAdminName] = React.useState('');
   const [selectedMonth, setSelectedMonth] = React.useState('October');
   const [selectedClass, setSelectedClass] = React.useState('All Classes');
   const [selectedSection, setSelectedSection] = React.useState('All Sections');
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [isClassDropdownOpen, setIsClassDropdownOpen] = React.useState(false);
   const [attendanceChartDuration, setAttendanceChartDuration] = React.useState('12m');
   const [feeChartDuration, setFeeChartDuration] = React.useState('12m');
 
@@ -41,6 +38,8 @@ const AnalyticsPage = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
@@ -106,7 +105,7 @@ const AnalyticsPage = ({ onLogout }) => {
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
+
       const pngUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
@@ -120,57 +119,7 @@ const AnalyticsPage = ({ onLogout }) => {
   };
 
   // Custom Simple Charts Components
-  const SimpleLineChart = ({ data, dataKey, color }) => {
-    const [hoveredPoint, setHoveredPoint] = React.useState(null);
-    const maxVal = Math.max(...data.map(d => d[dataKey]));
-    const points = data.map((d, i) => {
-      const x = (i / (data.length - 1)) * 100;
-      const y = 100 - (d[dataKey] / maxVal) * 80; // Scale to fit nicely
-      return `${x},${y}`;
-    }).join(' ');
 
-    return (
-      <div className="w-full h-full flex items-end justify-between px-2 pb-6 relative">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full overflow-visible">
-          {/* Grid lines */}
-          {[20, 40, 60, 80].map(y => (
-            <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="#e5e7eb" strokeWidth="0.5" />
-          ))}
-          {/* Line */}
-          <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          {/* Dots */}
-          {data.map((d, i) => {
-            const x = (i / (data.length - 1)) * 100;
-            const y = 100 - (d[dataKey] / maxVal) * 80;
-            return (
-              <circle 
-                key={i} 
-                cx={x} 
-                cy={y} 
-                r={hoveredPoint === i ? 4 : 2} 
-                fill={color} 
-                className="cursor-pointer transition-all duration-200"
-                onMouseEnter={() => setHoveredPoint(i)}
-                onMouseLeave={() => setHoveredPoint(null)}
-              />
-            );
-          })}
-        </svg>
-        {hoveredPoint !== null && (
-          <div className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 whitespace-nowrap shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-full" style={{ left: `${(hoveredPoint / (data.length - 1)) * 100}%`, top: `calc(${100 - (data[hoveredPoint][dataKey] / maxVal) * 80}% - 8px)` }}>
-            {data[hoveredPoint][dataKey]}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-          </div>
-        )}
-        {/* X Axis Labels */}
-        {data.map((d, i) => (
-          <div key={i} className="text-xs text-gray-600 absolute bottom-0 transform -translate-x-1/2" style={{ left: `${(i / (data.length - 1)) * 100}%` }}>
-            {d.month}
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   const SimpleDonutChart = ({ percentage, color, size = 160, id }) => {
     const radius = 40;
@@ -195,64 +144,64 @@ const AnalyticsPage = ({ onLogout }) => {
     const [hoveredIndex, setHoveredIndex] = React.useState(null);
     const maxVal = Math.max(...data.map(d => d[dataKey]), 0);
     const niceMaxVal = dataKey === 'attendance' ? 100 : Math.ceil(maxVal / 20000) * 20000 || 20000;
-    
+
     // SVG Dimensions
     const width = 100;
     const height = 100;
     const padding = { top: 10, right: 10, bottom: 20, left: 25 };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
-    
+
     const barWidth = (chartWidth / data.length) * barRatio;
     const gap = (chartWidth / data.length) * (1 - barRatio);
 
     return (
       <div className="w-full h-full" id={id}>
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full overflow-visible">
-           <defs>
-             <linearGradient id={`barGradient-${id}`} x1="0" y1="0" x2="0" y2="1">
-               <stop offset="0%" stopColor="#38bdf8" />
-               <stop offset="100%" stopColor="#0284c7" />
-             </linearGradient>
-           </defs>
-           {/* Y-Axis Labels & Grid */}
-           {Array.from({ length: 5 }).map((_, i) => {
-             const y = padding.top + (chartHeight / 4) * i;
-             const value = Math.round(niceMaxVal - (niceMaxVal / 4) * i);
-             const label = value >= 1000 ? `${value/1000}k` : value;
-             return (
-               <g key={i}>
-                 <text x={padding.left - 4} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="3.5" fill="#9ca3af">{label}</text>
-                 <line x1={padding.left} y1={y} x2={width} y2={y} stroke="#f3f4f6" strokeWidth="0.5" />
-               </g>
-             );
-           })}
+          <defs>
+            <linearGradient id={`barGradient-${id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" />
+              <stop offset="100%" stopColor="#0284c7" />
+            </linearGradient>
+          </defs>
+          {/* Y-Axis Labels & Grid */}
+          {Array.from({ length: 5 }).map((_, i) => {
+            const y = padding.top + (chartHeight / 4) * i;
+            const value = Math.round(niceMaxVal - (niceMaxVal / 4) * i);
+            const label = value >= 1000 ? `${value / 1000}k` : value;
+            return (
+              <g key={i}>
+                <text x={padding.left - 4} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="3.5" fill="#9ca3af">{label}</text>
+                <line x1={padding.left} y1={y} x2={width} y2={y} stroke="#f3f4f6" strokeWidth="0.5" />
+              </g>
+            );
+          })}
 
-           {/* Bars */}
-           {data.map((d, i) => {
-             const val = d[dataKey];
-             const barHeight = (val / niceMaxVal) * chartHeight;
-             const x = padding.left + (chartWidth / data.length) * i + gap / 2;
-             const y = padding.top + chartHeight - barHeight;
+          {/* Bars */}
+          {data.map((d, i) => {
+            const val = d[dataKey];
+            const barHeight = (val / niceMaxVal) * chartHeight;
+            const x = padding.left + (chartWidth / data.length) * i + gap / 2;
+            const y = padding.top + chartHeight - barHeight;
 
-             return (
-               <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}>
-                 <rect x={x} y={y} width={barWidth} height={barHeight} fill={`url(#barGradient-${id})`} rx="2" className="transition-all duration-300 hover:opacity-80 cursor-pointer" />
-                 {(data.length <= 6 || i % 2 === 0) && (
-                  <text x={x + barWidth/2} y={height - 5} textAnchor="middle" fontSize="3.5" fill="#9ca3af">{d.month}</text>
-                 )}
-                 {hoveredIndex === i && (
-                   <g>
-                     <rect x={x + barWidth/2 - 10} y={y - 12} width="20" height="8" rx="2" fill="#1f2937" />
-                     <text x={x + barWidth/2} y={y - 7} textAnchor="middle" fill="white" fontSize="3" alignmentBaseline="middle">{val}</text>
-                     <polygon points={`${x + barWidth/2 - 2},${y-4} ${x + barWidth/2 + 2},${y-4} ${x + barWidth/2},${y-2}`} fill="#1f2937" />
-                   </g>
-                 )}
-               </g>
-             );
-           })}
-           <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="transparent" strokeWidth="0" />
-           <line x1={padding.left} y1={height - padding.bottom} x2={width} y2={height - padding.bottom} stroke="#e5e7eb" strokeWidth="0.5" />
+            return (
+              <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}>
+                <rect x={x} y={y} width={barWidth} height={barHeight} fill={`url(#barGradient-${id})`} rx="2" className="transition-all duration-300 hover:opacity-80 cursor-pointer" />
+                {(data.length <= 6 || i % 2 === 0) && (
+                  <text x={x + barWidth / 2} y={height - 5} textAnchor="middle" fontSize="3.5" fill="#9ca3af">{d.month}</text>
+                )}
+                {hoveredIndex === i && (
+                  <g>
+                    <rect x={x + barWidth / 2 - 10} y={y - 12} width="20" height="8" rx="2" fill="#1f2937" />
+                    <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" fill="white" fontSize="3" alignmentBaseline="middle">{val}</text>
+                    <polygon points={`${x + barWidth / 2 - 2},${y - 4} ${x + barWidth / 2 + 2},${y - 4} ${x + barWidth / 2},${y - 2}`} fill="#1f2937" />
+                  </g>
+                )}
+              </g>
+            );
+          })}
+          <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="transparent" strokeWidth="0" />
+          <line x1={padding.left} y1={height - padding.bottom} x2={width} y2={height - padding.bottom} stroke="#e5e7eb" strokeWidth="0.5" />
         </svg>
       </div>
     );
@@ -273,7 +222,6 @@ const AnalyticsPage = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
@@ -290,7 +238,7 @@ const AnalyticsPage = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

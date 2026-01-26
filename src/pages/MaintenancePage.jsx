@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Search,
   Bell,
@@ -23,7 +22,7 @@ import {
 
 const MaintenancePage = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = React.useState('Admin User');
+  const [adminName, setAdminName] = React.useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -45,6 +44,8 @@ const MaintenancePage = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
@@ -149,7 +150,6 @@ const MaintenancePage = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" active onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
@@ -166,7 +166,7 @@ const MaintenancePage = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -252,7 +252,7 @@ const MaintenancePage = ({ onLogout }) => {
             <div className="bg-white p-6 rounded-2xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900">Maintenance Requests</h3>
-                <button 
+                <button
                   onClick={() => setShowModal(true)}
                   className="bg-sky-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-sky-700 transition-colors flex items-center gap-2"
                 >
@@ -317,7 +317,7 @@ const MaintenancePage = ({ onLogout }) => {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                   value={newRequest.title}
-                  onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
+                  onChange={(e) => setNewRequest({ ...newRequest, title: e.target.value })}
                   placeholder="e.g., Broken AC"
                 />
               </div>
@@ -328,7 +328,7 @@ const MaintenancePage = ({ onLogout }) => {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                   value={newRequest.location}
-                  onChange={(e) => setNewRequest({...newRequest, location: e.target.value})}
+                  onChange={(e) => setNewRequest({ ...newRequest, location: e.target.value })}
                   placeholder="e.g., Library"
                 />
               </div>
@@ -337,7 +337,7 @@ const MaintenancePage = ({ onLogout }) => {
                 <select
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                   value={newRequest.priority}
-                  onChange={(e) => setNewRequest({...newRequest, priority: e.target.value})}
+                  onChange={(e) => setNewRequest({ ...newRequest, priority: e.target.value })}
                 >
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>

@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   Menu,
@@ -40,7 +39,7 @@ const NavItem = ({ icon, label, active, onClick }) => (
 
 const AdminProfilePage = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -99,6 +98,8 @@ const AdminProfilePage = ({ onLogout }) => {
           }
           if (!storedName && registeredUsers.admin.firstName) {
             setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+          } else if (!storedName) {
+            setAdminName('Admin');
           }
         }
       } catch (error) {
@@ -277,7 +278,6 @@ const AdminProfilePage = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
