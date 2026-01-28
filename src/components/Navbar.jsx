@@ -11,11 +11,25 @@ export default function Navbar({ userRole, onLogout }) {
     navigate('/login');
   };
 
+  const handleLogoClick = () => {
+    if (userRole === 'admin') {
+      navigate('/admin');
+    } else if (userRole === 'student') {
+      navigate('/student');
+    } else if (userRole === 'staff') {
+      navigate('/teacher');
+    } else if (userRole === 'parent') {
+      navigate('/parent');
+    } else {
+      navigate('/'); // fallback to home
+    }
+  };
+
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <h1 className="text-2xl font-bold text-blue-600">🎓 EDUMIND</h1>
+          <h1 className="text-2xl font-bold text-blue-600 cursor-pointer" onClick={handleLogoClick}>🎓 EDUMIND</h1>
 
           <div className="hidden md:flex gap-6">
             {userRole === 'admin' && (
@@ -94,9 +108,6 @@ export default function Navbar({ userRole, onLogout }) {
                 </a>
                 <a href="/admin/attendance" className="text-gray-700 hover:text-blue-600 font-medium py-2">
                   Attendance
-                </a>
-                <a href="/admin/maintenance" className="text-gray-700 hover:text-blue-600 font-medium py-2">
-                  Maintenance
                 </a>
                 <a href="/admin/settings" className="text-gray-700 hover:text-blue-600 font-medium py-2">
                   Settings

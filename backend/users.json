@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1769621480654",
+    "firstName": "System",
+    "lastName": "Administrator",
+    "email": "admin@edumind.com",
+    "role": "admin",
+    "password": "$2b$10$3wnXIQEK6VuTcArOnGG8yOWektjctIGi0uyfUEwme8p9vT8jX4rAi",
+    "isFirstLogin": false,
+    "createdAt": "2026-01-28T17:31:20.655Z",
+    "status": "active"
+  },
+  {
+    "id": "1769621480753",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "role": "student",
+    "password": "$2b$10$N4AS9hjzB/AstM7ufGzNMOHWL1dtDtF1wlANtu/FCffcr0cswRSU2",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-28T17:31:20.753Z",
+    "status": "active",
+    "rollNumber": "STU001",
+    "className": "10-A"
+  },
+  {
+    "id": "1769621984637",
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "parent@example.com",
+    "role": "parent",
+    "password": "$2b$10$QsGspfXskCTbufZqW6ieAOjrHI4w9i3nwaJTiJ2DXhr2iwsmLRb3G",
+    "isFirstLogin": true,
+    "createdAt": "2026-01-28T17:39:44.637Z",
+    "status": "active",
+    "children": [
+      {
+        "name": "Alice Smith",
+        "grade": "10-A"
+      }
+    ],
+    "relationship": "Father"
+  }
+]

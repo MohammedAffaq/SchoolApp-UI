@@ -16,7 +16,8 @@ import {
   FileText,
   Image,
   Clock,
-  Settings
+  Settings,
+  ShieldCheck
 } from 'lucide-react';
 
 const NotificationItem = ({ avatar, name, action, target, time, type, attachment, read }) => (
@@ -51,7 +52,10 @@ const NotificationsPage = ({ onLogout }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
     const fetchAdminName = () => {
@@ -64,12 +68,53 @@ const NotificationsPage = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
       }
     };
     fetchAdminName();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/student-requests');
+        const result = await response.json();
+        if (result.success) {
+          setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
+        }
+      } catch (error) {
+        console.error('Error fetching pending requests:', error);
+      }
+    };
+    fetchPendingRequests();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchNotificationFlag = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:5000/api/notifications/flag', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setHasNewNotifications(data.hasNewNotification);
+        }
+      } catch (error) {
+        console.error('Error fetching notification flag:', error);
+      }
+    };
+    fetchNotificationFlag();
   }, []);
 
   const [notifications, setNotifications] = useState({
@@ -84,11 +129,36 @@ const NotificationsPage = ({ onLogout }) => {
     ]
   });
 
-  const handleMarkAllRead = () => {
-    setNotifications(prev => ({
-      today: prev.today.map(n => ({ ...n, read: true })),
-      yesterday: prev.yesterday.map(n => ({ ...n, read: true }))
-    }));
+  const [hasNewNotifications, setHasNewNotifications] = useState(false);
+
+  const handleMarkAllRead = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:5000/api/notifications/read-all', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // Update local state
+        setNotifications(prev => ({
+          today: prev.today.map(n => ({ ...n, read: true })),
+          yesterday: prev.yesterday.map(n => ({ ...n, read: true }))
+        }));
+
+        // Reset notification flag
+        setHasNewNotifications(false);
+      } else {
+        console.error('Failed to mark notifications as read');
+      }
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
   };
 
   const handleClearAll = () => {
@@ -116,13 +186,13 @@ const NotificationsPage = ({ onLogout }) => {
 
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" onClick={() => navigate('/admin')} />
+          <NavItem icon={<ShieldCheck size={20} />} label="Verification" onClick={() => navigate('/admin', { state: { activeView: 'verification' } })} badge={pendingRequestsCount} />
           <NavItem icon={<GraduationCap size={20} />} label="Students" onClick={() => navigate('/admin/students')} />
           <NavItem icon={<Users size={20} />} label="Teachers" onClick={() => navigate('/admin/teachers')} />
           <NavItem icon={<User size={20} />} label="Parents" onClick={() => navigate('/admin/parents')} />
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
@@ -173,7 +243,7 @@ const NotificationsPage = ({ onLogout }) => {
               className="relative p-2 text-gray-400 hover:text-indigo-600 transition-colors"
             >
               <Bell size={28} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+              {hasNewNotifications && <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>}
             </button>
             <button onClick={() => navigate('/admin/profile')} className="flex items-center gap-3 pl-6 border-l border-gray-100 hover:bg-gray-50 rounded-lg -ml-2 p-2 transition-colors">
               <div className="text-right hidden md:block">
@@ -221,10 +291,15 @@ const NotificationsPage = ({ onLogout }) => {
   );
 };
 
-const NavItem = ({ icon, label, active, onClick }) => (
-  <button onClick={onClick} className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}>
+const NavItem = ({ icon, label, active, onClick, badge }) => (
+  <button onClick={onClick} className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group w-full ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}>
     <span className={`${active ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-600 transition-colors'}`}>{icon}</span>
-    <span>{label}</span>
+    <span className="flex-1 text-left">{label}</span>
+    {badge > 0 && (
+      <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg ring-2 ring-white">
+        {badge}
+      </span>
+    )}
   </button>
 );
 

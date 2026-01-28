@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Search, X, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { validateAuth, logout } from '../utils/auth';
 
 export default function UserManagement() {
   const navigate = useNavigate();
@@ -41,9 +42,9 @@ export default function UserManagement() {
   const [showPassword, setShowPassword] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
 
-  // Load users from localStorage on mount
+  // Load users from API on mount
   useEffect(() => {
-    loadUsers();
+    loadUsersFromAPI();
   }, []);
 
   // Filter users when search term or role filter changes
@@ -51,17 +52,20 @@ export default function UserManagement() {
     filterUsers();
   }, [searchTerm, roleFilter, users]);
 
-  const loadUsers = () => {
-    const storedUsers = localStorage.getItem('edumind_users');
-    if (storedUsers) {
-      try {
-        const parsedUsers = JSON.parse(storedUsers);
-        setUsers(parsedUsers);
-      } catch (e) {
+  const loadUsersFromAPI = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users');
+      const result = await response.json();
+
+      if (result.success) {
+        setUsers(result.users);
+      } else {
+        console.error('Failed to load users:', result.error);
         setUsers([]);
       }
-    } else {
-      // Add some demo users
+    } catch (error) {
+      console.error('Error loading users:', error);
+      // Fallback to demo users if API is not available
       const demoUsers = [
         {
           id: 1,
@@ -101,7 +105,6 @@ export default function UserManagement() {
         },
       ];
       setUsers(demoUsers);
-      localStorage.setItem('edumind_users', JSON.stringify(demoUsers));
     }
   };
 
@@ -150,6 +153,11 @@ export default function UserManagement() {
     if (formData.role === 'parent') {
       if (!formData.childName.trim()) errors.childName = 'Child name is required';
       if (!formData.relationship.trim()) errors.relationship = 'Relationship is required';
+      if (!formData.className.trim()) errors.className = 'Child class is required';
+    }
+
+    if (formData.role === 'staff') {
+      if (!formData.designation.trim()) errors.designation = 'Designation is required';
     }
 
     setFormErrors(errors);
@@ -196,25 +204,56 @@ export default function UserManagement() {
 
     if (!validateForm()) return;
 
+    // Validate authentication before proceeding
+    const authValidation = validateAuth();
+    if (!authValidation.isValid) {
+      if (authValidation.error === 'Session expired. Please login again.') {
+        alert('Your session has expired. Please login again.');
+        logout();
+        return;
+      }
+      setFormErrors({ general: authValidation.error });
+      return;
+    }
+
     setSubmitLoading(true);
-    setTimeout(() => {
-      const newUser = {
-        ...formData,
-        id: Date.now(),
-      };
 
-      const updatedUsers = [...users, newUser];
-      setUsers(updatedUsers);
-      localStorage.setItem('edumind_users', JSON.stringify(updatedUsers));
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authValidation.token}`,
+        },
+        body: JSON.stringify({ ...formData, password: tempPassword }),
+      });
 
-      setSuccessMessage('User added successfully!');
-      setTimeout(() => {
-        setShowAddModal(false);
-        setSuccessMessage('');
-        resetForm();
-      }, 1500);
-      setSubmitLoading(false);
-    }, 1000);
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccessMessage('User registered successfully! Email sent with login credentials.');
+        // Reload users from API
+        loadUsersFromAPI();
+        setTimeout(() => {
+          setShowAddModal(false);
+          setSuccessMessage('');
+          resetForm();
+        }, 2000);
+      } else {
+        if (result.error === 'Invalid token or authorization error.' ||
+            result.error === 'Unauthorized. Admin access required.') {
+          alert('Your session has expired. Please login again.');
+          logout();
+          return;
+        }
+        setFormErrors({ general: result.error || 'Failed to register user' });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setFormErrors({ general: 'Failed to connect to server. Please try again.' });
+    }
+
+    setSubmitLoading(false);
   };
 
   const handleEditUser = async (e) => {
@@ -324,8 +363,9 @@ export default function UserManagement() {
           >
             <option value="all">All Roles</option>
             <option value="student">Students</option>
-            <option value="teacher">Teachers</option>
             <option value="parent">Parents</option>
+            <option value="teacher">Teachers / Staff</option>
+            <option value="staff">Non-Staff</option>
           </select>
 
           {/* Add User Button */}
@@ -554,10 +594,22 @@ export default function UserManagement() {
                       }`}
                     >
                       <option value="student">Student</option>
-                      <option value="teacher">Teacher</option>
-                      <option value="parent">Parent</option>
+                      <option value="parent">Parent</option>                      <option value="teacher">Teaching Staff</option>
+                      <option value="staff">Non-Teaching Staff</option>
                     </select>
                     {formErrors.role && <p className="text-red-600 text-sm mt-1">{formErrors.role}</p>}
+                  </div>
+                  
+                  {/* Password (Optional) */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Password (Optional)</label>
+                    <input
+                      type="password"
+                      value={tempPassword}
+                      onChange={(e) => setTempPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-blue-200"
+                      placeholder="Leave blank to auto-generate"
+                    />
                   </div>
 
                   {/* Status */}
@@ -709,6 +761,51 @@ export default function UserManagement() {
                         <option value="Guardian">Guardian</option>
                       </select>
                       {formErrors.relationship && <p className="text-red-600 text-sm mt-1">{formErrors.relationship}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Child's Class *</label>
+                      <input
+                        type="text"
+                        value={formData.className}
+                        onChange={(e) => {
+                          setFormData({ ...formData, className: e.target.value });
+                          if (formErrors.className) setFormErrors({ ...formErrors, className: '' });
+                        }}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
+                          formErrors.className
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
+                        placeholder="10-A"
+                      />
+                      {formErrors.className && <p className="text-red-600 text-sm mt-1">{formErrors.className}</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.role === 'staff' && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">Staff Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Designation *</label>
+                      <input
+                        type="text"
+                        value={formData.designation}
+                        onChange={(e) => {
+                          setFormData({ ...formData, designation: e.target.value });
+                          if (formErrors.designation) setFormErrors({ ...formErrors, designation: '' });
+                        }}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
+                          formErrors.designation
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
+                        placeholder="Librarian, Accountant, etc."
+                      />
+                      {formErrors.designation && <p className="text-red-600 text-sm mt-1">{formErrors.designation}</p>}
                     </div>
                   </div>
                 </div>

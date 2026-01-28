@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, UserMinus, CheckCircle, XCircle, AlertCircle, Send, X } from 'lucide-react';
 
 export default function TeacherDashboard() {
   const [staffType, setStaffType] = useState('teaching');
+  const [showAddRequestModal, setShowAddRequestModal] = useState(false);
+  const [showDeleteRequestModal, setShowDeleteRequestModal] = useState(false);
+  const [newStudentRequest, setNewStudentRequest] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    rollNumber: '',
+    className: '',
+    reason: ''
+  });
+  const [deleteStudentRequest, setDeleteStudentRequest] = useState({
+    studentId: '',
+    reason: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requestError, setRequestError] = useState('');
 
   useEffect(() => {
     try {
@@ -13,6 +31,82 @@ export default function TeacherDashboard() {
       console.error('Error fetching staff type:', error);
     }
   }, []);
+
+  const handleAddRequestSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setRequestError('');
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser || currentUser.role !== 'teacher') {
+        throw new Error('Authentication error: Not a teacher.');
+      }
+      const token = currentUser?.token;
+
+      const response = await fetch('http://localhost:5000/api/student-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type: 'add',
+          studentData: {
+            firstName: newStudentRequest.firstName,
+            lastName: newStudentRequest.lastName,
+            email: newStudentRequest.email,
+            phone: newStudentRequest.phone,
+            rollNumber: newStudentRequest.rollNumber,
+            className: newStudentRequest.className,
+          },
+          reason: newStudentRequest.reason,
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Request to add student submitted successfully.');
+        setShowAddRequestModal(false);
+        setNewStudentRequest({ firstName: '', lastName: '', email: '', phone: '', rollNumber: '', className: '', reason: '' });
+      } else {
+        setRequestError(result.error || 'Failed to submit request.');
+      }
+    } catch (error) {
+      setRequestError('Failed to connect to server.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteRequestSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setRequestError('');
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser || currentUser.role !== 'teacher') {
+        throw new Error('Authentication error: Not a teacher.');
+      }
+      const token = currentUser?.token;
+
+      const response = await fetch('http://localhost:5000/api/student-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ type: 'delete', studentData: { studentId: deleteStudentRequest.studentId }, reason: deleteStudentRequest.reason }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Request to remove student submitted successfully.');
+        setShowDeleteRequestModal(false);
+        setDeleteStudentRequest({ studentId: '', reason: '' });
+      } else {
+        setRequestError(result.error || 'Failed to submit request.');
+      }
+    } catch (error) {
+      setRequestError('Failed to connect to server.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const teacherStats = {
     totalStudents: 128,
@@ -252,7 +346,94 @@ export default function TeacherDashboard() {
             ))}
           </div>
         </div>
+
+        {/* Student Management Requests */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Student Management</h2>
+          <p className="text-gray-600 mb-6">Request to add or remove students from your classes. All requests require admin approval.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              onClick={() => setShowAddRequestModal(true)}
+              className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              <div className="p-2 bg-green-500 rounded-lg">
+                <Plus className="text-white" size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-green-800">Add New Student</p>
+                <p className="text-sm text-green-600">Request to enroll a new student</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setShowDeleteRequestModal(true)}
+              className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <div className="p-2 bg-red-500 rounded-lg">
+                <UserMinus className="text-white" size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-red-800">Remove Student</p>
+                <p className="text-sm text-red-600">Request to remove a student</p>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Add Student Request Modal */}
+      {showAddRequestModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Request to Add Student</h3>
+              <button onClick={() => setShowAddRequestModal(false)} className="text-gray-400 hover:text-gray-600"><X size={24} /></button>
+            </div>
+            <form onSubmit={handleAddRequestSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {requestError && <p className="text-red-500 text-sm">{requestError}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" required value={newStudentRequest.firstName} onChange={(e) => setNewStudentRequest({...newStudentRequest, firstName: e.target.value})} placeholder="First Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.lastName} onChange={(e) => setNewStudentRequest({...newStudentRequest, lastName: e.target.value})} placeholder="Last Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="email" required value={newStudentRequest.email} onChange={(e) => setNewStudentRequest({...newStudentRequest, email: e.target.value})} placeholder="Email" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="tel" required value={newStudentRequest.phone} onChange={(e) => setNewStudentRequest({...newStudentRequest, phone: e.target.value})} placeholder="Phone" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.rollNumber} onChange={(e) => setNewStudentRequest({...newStudentRequest, rollNumber: e.target.value})} placeholder="Roll Number" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.className} onChange={(e) => setNewStudentRequest({...newStudentRequest, className: e.target.value})} placeholder="Class (e.g., 10-A)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+              </div>
+              <textarea value={newStudentRequest.reason} onChange={(e) => setNewStudentRequest({...newStudentRequest, reason: e.target.value})} placeholder="Reason for adding student..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="3"></textarea>
+              <div className="pt-2 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowAddRequestModal(false)} className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 font-medium">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium disabled:opacity-50">
+                  {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Student Request Modal */}
+      {showDeleteRequestModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Request to Remove Student</h3>
+              <button onClick={() => setShowDeleteRequestModal(false)} className="text-gray-400 hover:text-gray-600"><X size={24} /></button>
+            </div>
+            <form onSubmit={handleDeleteRequestSubmit} className="p-6 space-y-4">
+              {requestError && <p className="text-red-500 text-sm">{requestError}</p>}
+              <input type="text" required value={deleteStudentRequest.studentId} onChange={(e) => setDeleteStudentRequest({...deleteStudentRequest, studentId: e.target.value})} placeholder="Student ID (e.g., STU001)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+              <textarea required value={deleteStudentRequest.reason} onChange={(e) => setDeleteStudentRequest({...deleteStudentRequest, reason: e.target.value})} placeholder="Reason for removal..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="4"></textarea>
+              <div className="pt-2 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowDeleteRequestModal(false)} className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 font-medium">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium disabled:opacity-50">
+                  {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

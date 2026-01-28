@@ -24,23 +24,29 @@ import {
   X,
   CheckCircle,
   AlertCircle,
-  Trash2
+  Trash2,
+  ShieldCheck
 } from 'lucide-react';
 
 // Helper Components
-const NavItem = ({ icon, label, active, onClick }) => (
+const NavItem = ({ icon, label, active, onClick, badge }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}
+    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group w-full ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}
   >
     <span className={`${active ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-600 transition-colors'}`}>{icon}</span>
-    <span>{label}</span>
+    <span className="flex-1 text-left">{label}</span>
+    {badge > 0 && (
+      <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg ring-2 ring-white">
+        {badge}
+      </span>
+    )}
   </button>
 );
 
 const AdminProfilePage = ({ onLogout }) => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -60,6 +66,7 @@ const AdminProfilePage = ({ onLogout }) => {
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   
   const [profileData, setProfileData] = useState({
     firstName: 'Admin',
@@ -73,33 +80,42 @@ const AdminProfilePage = ({ onLogout }) => {
   });
 
   useEffect(() => {
-    const fetchAdminData = () => {
-      const storedName = localStorage.getItem('userName');
-      if (storedName) {
-        setAdminName(storedName);
-        const nameParts = storedName.split(' ');
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(' ');
-        setProfileData(prev => ({ ...prev, firstName, lastName }));
-      }
-      
+    const fetchAdminData = async () => {
       try {
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-        if (registeredUsers.admin) {
-          setProfileData(prev => ({
-            ...prev,
-            firstName: registeredUsers.admin.firstName || prev.firstName,
-            lastName: registeredUsers.admin.lastName || prev.lastName,
-            email: registeredUsers.admin.email || prev.email,
-            phone: registeredUsers.admin.phone || prev.phone,
-            notifications: registeredUsers.admin.notifications !== undefined ? registeredUsers.admin.notifications : true
-          }));
-          if (registeredUsers.admin.profileImage) {
-            setProfileImage(registeredUsers.admin.profileImage);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('No token found');
+          return;
+        }
+
+        const response = await fetch('http://localhost:5000/admin/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-          if (!storedName && registeredUsers.admin.firstName) {
-            setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        });
+
+        if (response.ok) {
+          const profileData = await response.json();
+          setProfileData({
+            firstName: profileData.firstName || 'Admin',
+            lastName: profileData.lastName || 'User',
+            email: profileData.emailId || 'admin@edumind.com',
+            phone: profileData.mobile || '+1 234 567 890',
+            role: 'Administrator',
+            location: 'New York, USA',
+            bio: 'Experienced school administrator with a passion for education technology and management.',
+            notifications: true
+          });
+
+          const fullName = `${profileData.firstName || 'Admin'} ${profileData.lastName || 'User'}`;
+          setAdminName(fullName);
+
+          if (profileData.profilePicture) {
+            setProfileImage(profileData.profilePicture);
           }
+        } else {
+          console.error('Failed to fetch admin profile');
         }
       } catch (error) {
         console.error('Error fetching admin data:', error);
@@ -108,25 +124,53 @@ const AdminProfilePage = ({ onLogout }) => {
     fetchAdminData();
   }, []);
 
-  const handleSave = () => {
-    setIsEditing(false);
-    const fullName = `${profileData.firstName} ${profileData.lastName}`;
-    setAdminName(fullName);
-    localStorage.setItem('userName', fullName);
-    
-    try {
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-        if (registeredUsers.admin) {
-            registeredUsers.admin.firstName = profileData.firstName;
-            registeredUsers.admin.lastName = profileData.lastName;
-            registeredUsers.admin.email = profileData.email;
-            registeredUsers.admin.phone = profileData.phone;
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-            setSuccessMessage('Profile updated successfully!');
-            setTimeout(() => setSuccessMessage(''), 5000);
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/student-requests');
+        const result = await response.json();
+        if (result.success) {
+          setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
         }
-    } catch (e) {
-        console.error("Failed to save profile data:", e);
+      } catch (error) {
+        console.error('Error fetching pending requests:', error);
+      }
+    };
+    fetchPendingRequests();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/admin/profile', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
+          mobile: profileData.phone
+        })
+      });
+
+      if (response.ok) {
+        setIsEditing(false);
+        const fullName = `${profileData.firstName} ${profileData.lastName}`;
+        setAdminName(fullName);
+        setSuccessMessage('Profile updated successfully!');
+        setTimeout(() => setSuccessMessage(''), 5000);
+      } else {
+        console.error('Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
     }
   };
 
@@ -145,7 +189,7 @@ const AdminProfilePage = ({ onLogout }) => {
     }
   };
 
-  const handlePasswordSave = (e) => {
+  const handlePasswordSave = async (e) => {
     e.preventDefault();
     setPasswordError('');
     setPasswordSuccess('');
@@ -168,28 +212,38 @@ const AdminProfilePage = ({ onLogout }) => {
     }
 
     try {
-      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-      if (registeredUsers.admin) {
-        if (registeredUsers.admin.password !== currentPassword) {
-            setPasswordError('Incorrect current password');
-            return;
-        }
-        
-        registeredUsers.admin.password = newPassword;
-        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setPasswordError('Authentication token not found');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/admin/change-password', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword
+        })
+      });
+
+      if (response.ok) {
         setPasswordSuccess('Password updated successfully');
-        
         setTimeout(() => {
-            setShowPasswordModal(false);
-            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-            setPasswordSuccess('');
+          setShowPasswordModal(false);
+          setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+          setPasswordSuccess('');
         }, 1500);
       } else {
-          setPasswordError('Admin user record not found');
+        const errorData = await response.json();
+        setPasswordError(errorData.message || 'Failed to update password');
       }
     } catch (error) {
       console.error('Error updating password:', error);
-      setPasswordError('Failed to update password');
+      setPasswordError('Failed to update password. Please try again.');
     }
   };
 
@@ -271,13 +325,13 @@ const AdminProfilePage = ({ onLogout }) => {
 
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" onClick={() => navigate('/admin')} />
+          <NavItem icon={<ShieldCheck size={20} />} label="Verification" onClick={() => navigate('/admin', { state: { activeView: 'verification' } })} badge={pendingRequestsCount} />
           <NavItem icon={<GraduationCap size={20} />} label="Students" onClick={() => navigate('/admin/students')} />
           <NavItem icon={<Users size={20} />} label="Teachers" onClick={() => navigate('/admin/teachers')} />
           <NavItem icon={<User size={20} />} label="Parents" onClick={() => navigate('/admin/parents')} />
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 

@@ -24,13 +24,17 @@ import {
   Edit,
   Settings,
   Eye,
-  Download
+  Download,
+  CheckCircle,
+  Copy,
+  ShieldCheck
 } from 'lucide-react';
+import { validateAuth, logout } from '../utils/auth';
 
 const TeachersPage = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [adminName, setAdminName] = useState('Admin User');
+  const [adminName, setAdminName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All Subjects');
   const [sortOrder, setSortOrder] = useState('A-Z');
@@ -44,17 +48,20 @@ const TeachersPage = ({ onLogout }) => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [newStaff, setNewStaff] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
-    subject: '',
     designation: '',
-    role: '',
-    department: '',
-    classes: ''
+    subject: '',
+    staffType: activeTab === 'teaching' ? 'teaching' : 'non-teaching'
   });
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   useEffect(() => {
     const fetchAdminName = () => {
@@ -67,12 +74,29 @@ const TeachersPage = ({ onLogout }) => {
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
         if (registeredUsers.admin && registeredUsers.admin.firstName) {
           setAdminName(`${registeredUsers.admin.firstName} ${registeredUsers.admin.lastName}`);
+        } else {
+          setAdminName('Admin');
         }
       } catch (error) {
         console.error('Error fetching admin name:', error);
       }
     };
     fetchAdminName();
+  }, []);
+
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/student-requests');
+        const result = await response.json();
+        if (result.success) {
+          setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
+        }
+      } catch (error) {
+        console.error('Error fetching pending requests:', error);
+      }
+    };
+    fetchPendingRequests();
   }, []);
 
   useEffect(() => {
@@ -412,7 +436,7 @@ const TeachersPage = ({ onLogout }) => {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setNewStaff({ name: '', email: '', phone: '', subject: '', designation: '', role: '', department: '', classes: '' });
+    setNewStaff({ firstName: '', lastName: '', email: '', phone: '', subject: '', designation: '', role: '', department: '', classes: '', staffType: activeTab === 'teaching' ? 'teaching' : 'non-teaching' });
     setShowModal(true);
   };
 
@@ -437,57 +461,80 @@ const TeachersPage = ({ onLogout }) => {
     setShowViewModal(true);
   };
 
-  const handleSaveStaff = (e) => {
+  const handleSaveStaff = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      if (activeTab === 'teaching') {
-        setTeachers(teachers.map(t => t.id === editId ? {
-          ...t,
-          name: newStaff.name,
-          email: newStaff.email,
-          phone: newStaff.phone,
-          subject: newStaff.subject,
-          designation: newStaff.designation,
-          classes: newStaff.classes.split(',').map(c => c.trim())
-        } : t));
+
+    const role = activeTab === 'teaching' ? 'teacher' : 'staff';
+    const userData = {
+      firstName: newStaff.firstName,
+      lastName: newStaff.lastName,
+      email: newStaff.email,
+      phone: newStaff.phone,
+      role: role,
+      ...(role === 'teacher' && {
+        subject: newStaff.subject,
+        designation: newStaff.designation
+      }),
+      ...(role === 'staff' && {
+        designation: newStaff.role // Mapping role input to designation for backend
+      })
+    };
+
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const token = currentUser?.token;
+
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Staff registered successfully!');
+        setCreatedCredentials({ email: newStaff.email, password: 'Sent via email', role: activeTab === 'teaching' ? 'Teacher' : 'Staff Member' });
+        setShowCredentialsModal(true);
+
+        // Also add to local staff list for display
+        if (activeTab === 'teaching') {
+          const newTeacher = {
+            id: `TCH00${teachers.length + 1}`,
+            name: `${newStaff.firstName} ${newStaff.lastName}`,
+            avatar: `https://ui-avatars.com/api/?name=${newStaff.firstName}+${newStaff.lastName}&background=5A4FCF&color=fff`,
+            subject: newStaff.subject,
+            designation: newStaff.designation,
+            email: newStaff.email,
+            phone: newStaff.phone,
+            classes: [] // Classes not collected here
+          };
+          setTeachers([...teachers, newTeacher]);
+        } else {
+          const newNonTeaching = {
+            id: `STF00${nonTeachingStaff.length + 1}`,
+            name: `${newStaff.firstName} ${newStaff.lastName}`,
+            avatar: `https://ui-avatars.com/api/?name=${newStaff.firstName}+${newStaff.lastName}&background=EC4899&color=fff`,
+            role: newStaff.role,
+            email: newStaff.email,
+            phone: newStaff.phone,
+            department: newStaff.department || 'Administration'
+          };
+          setNonTeachingStaff([...nonTeachingStaff, newNonTeaching]);
+        }
+
+        setShowModal(false);
+        setNewStaff({ firstName: '', lastName: '', email: '', phone: '', designation: '', subject: '', staffType: activeTab === 'teaching' ? 'teaching' : 'non-teaching', role: '', department: '', classes: '' });
       } else {
-        setNonTeachingStaff(nonTeachingStaff.map(s => s.id === editId ? {
-          ...s,
-          name: newStaff.name,
-          email: newStaff.email,
-          phone: newStaff.phone,
-          role: newStaff.role,
-          department: newStaff.department
-        } : s));
+        alert('Failed to register staff: ' + result.error);
       }
-    } else {
-      if (activeTab === 'teaching') {
-        const newTeacher = {
-          id: `TCH00${teachers.length + 1}`,
-          name: newStaff.name,
-          avatar: `https://ui-avatars.com/api/?name=${newStaff.name}&background=5A4FCF&color=fff`,
-          subject: newStaff.subject,
-          designation: newStaff.designation,
-          email: newStaff.email,
-          phone: newStaff.phone,
-          classes: newStaff.classes ? newStaff.classes.split(',').map(c => c.trim()) : []
-        };
-        setTeachers([...teachers, newTeacher]);
-      } else {
-        const newNonTeaching = {
-          id: `STF00${nonTeachingStaff.length + 1}`,
-          name: newStaff.name,
-          avatar: `https://ui-avatars.com/api/?name=${newStaff.name}&background=EC4899&color=fff`,
-          role: newStaff.role,
-          email: newStaff.email,
-          phone: newStaff.phone,
-          department: newStaff.department
-        };
-        setNonTeachingStaff([...nonTeachingStaff, newNonTeaching]);
-      }
+    } catch (error) {
+      console.error('Error registering staff:', error);
+      alert('Failed to connect to server.');
     }
-    setShowModal(false);
-    setNewStaff({ name: '', email: '', phone: '', subject: '', designation: '', role: '', department: '', classes: '' });
   };
 
   const confirmDelete = (person) => {
@@ -515,6 +562,7 @@ const TeachersPage = ({ onLogout }) => {
 
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" onClick={() => navigate('/admin')} />
+          <NavItem icon={<ShieldCheck size={20} />} label="Verification" onClick={() => navigate('/admin', { state: { activeView: 'verification' } })} badge={pendingRequestsCount} />
           <NavItem icon={<GraduationCap size={20} />} label="Students" onClick={() => navigate('/admin/students')} />
           <div>
             <NavItem icon={<Users size={20} />} label="Teachers" active onClick={() => navigate('/admin/teachers')} />
@@ -527,7 +575,6 @@ const TeachersPage = ({ onLogout }) => {
           <NavItem icon={<Bus size={20} />} label="Driver & Vehicles" onClick={() => navigate('/admin/drivers')} />
           <NavItem icon={<DollarSign size={20} />} label="Finance" onClick={() => navigate('/admin/finance')} />
           <NavItem icon={<CalendarCheck size={20} />} label="Attendance" onClick={() => navigate('/admin/attendance')} />
-          <NavItem icon={<Wrench size={20} />} label="Maintenance" onClick={() => navigate('/admin/maintenance')} />
           <NavItem icon={<Settings size={20} />} label="Settings" onClick={() => navigate('/admin/settings')} />
         </nav>
 
@@ -782,81 +829,102 @@ const TeachersPage = ({ onLogout }) => {
               </button>
             </div>
             <form onSubmit={handleSaveStaff} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                  value={newStaff.name}
-                  onChange={(e) => setNewStaff({...newStaff, name: e.target.value})}
-                  placeholder="e.g., John Doe"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                    value={newStaff.firstName}
+                    onChange={(e) => setNewStaff({...newStaff, firstName: e.target.value})}
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                    value={newStaff.lastName}
+                    onChange={(e) => setNewStaff({...newStaff, lastName: e.target.value})}
+                    placeholder="Doe"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                  value={newStaff.email}
-                  onChange={(e) => setNewStaff({...newStaff, email: e.target.value})}
-                  placeholder="e.g., john@school.edu"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                  <input
+                    type="email"
+                    required
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                    value={newStaff.email}
+                    onChange={(e) => setNewStaff({...newStaff, email: e.target.value})}
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                    value={newStaff.phone}
+                    onChange={(e) => setNewStaff({...newStaff, phone: e.target.value})}
+                    placeholder="9876543210"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  required
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                  value={newStaff.phone}
-                  onChange={(e) => setNewStaff({...newStaff, phone: e.target.value})}
-                  placeholder="e.g., +1-555-0123"
-                />
-              </div>
-
-              {activeTab === 'teaching' ? (
-                <>
+              {activeTab === 'teaching' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
                     <input
                       type="text"
                       required
                       className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                       value={newStaff.subject}
                       onChange={(e) => setNewStaff({...newStaff, subject: e.target.value})}
-                      placeholder="e.g., Mathematics"
+                      placeholder="Mathematics"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
                     <select
+                      required
                       className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                       value={newStaff.designation}
                       onChange={(e) => setNewStaff({...newStaff, designation: e.target.value})}
                     >
+                      <option value="">Select Designation</option>
                       <option value="Teacher">Teacher</option>
                       <option value="Class Teacher">Class Teacher</option>
                       <option value="HOD">HOD</option>
                       <option value="Principal">Principal</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Classes (comma separated)</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                      value={newStaff.classes}
-                      onChange={(e) => setNewStaff({...newStaff, classes: e.target.value})}
-                      placeholder="e.g., Grade 10-A, Grade 11-B"
-                    />
-                  </div>
-                </>
-              ) : (
+                </div>
+              )}
+
+              {activeTab === 'teaching' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Classes (comma separated)</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                    value={newStaff.classes}
+                    onChange={(e) => setNewStaff({...newStaff, classes: e.target.value})}
+                    placeholder="e.g., Grade 10-A, Grade 11-B"
+                  />
+                </div>
+              )}
+
+              {activeTab === 'non-teaching' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
                     <input
                       type="text"
                       required
@@ -867,7 +935,7 @@ const TeachersPage = ({ onLogout }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
                     <input
                       type="text"
                       required
@@ -1010,18 +1078,71 @@ const TeachersPage = ({ onLogout }) => {
           </div>
         </div>
       )}
+
+      {/* Credentials Modal */}
+      {showCredentialsModal && createdCredentials && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="text-green-600" size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Registration Successful!</h3>
+              <p className="text-gray-600 mb-4">
+                Credentials have been generated.
+              </p>
+              
+              <div className="w-full bg-gray-50 rounded-xl p-4 text-left space-y-3 border border-gray-100">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Login ID</p>
+                  <p className="font-mono text-gray-900 font-medium">{createdCredentials.email}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Password</p>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <p className="font-mono text-gray-900 font-bold bg-white px-2 py-1 rounded border border-gray-200">{createdCredentials.password}</p>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdCredentials.password);
+                        setIsCopied(true);
+                        setTimeout(() => setIsCopied(false), 2000);
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${isCopied ? 'text-green-600 bg-green-50 hover:bg-green-100' : 'text-indigo-600 hover:bg-indigo-50'}`}
+                      title="Copy Password"
+                    >
+                      {isCopied ? <CheckCircle size={16} /> : <Copy size={16} />}
+                      {isCopied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowCredentialsModal(false)}
+              className="w-full px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-medium transition-colors"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // Helper Components
-const NavItem = ({ icon, label, active, onClick }) => (
+const NavItem = ({ icon, label, active, onClick, badge }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}
+    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group w-full ${active ? 'bg-sky-50 text-sky-600 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'}`}
   >
     <span className={`${active ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-600 transition-colors'}`}>{icon}</span>
-    <span>{label}</span>
+    <span className="flex-1 text-left">{label}</span>
+    {badge > 0 && (
+      <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg ring-2 ring-white">
+        {badge}
+      </span>
+    )}
   </button>
 );
 

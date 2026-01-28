@@ -25,14 +25,41 @@ export default function Login({ onLogin }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock authentication delay
-    setTimeout(() => {
-      onLogin(formData.role);
-      setIsLoading(false);
-    }, 1500);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Store user data in localStorage for session management
+        localStorage.setItem('currentUser', JSON.stringify(result.user));
+        localStorage.setItem('userRole', result.user.role);
+
+        // Redirect based on role
+        onLogin(result.user.role);
+      } else {
+        // Show error message
+        alert(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Failed to connect to server. Please try again.');
+    }
+
+    setIsLoading(false);
   };
 
   const handleForgotPasswordSubmit = (e) => {
@@ -57,21 +84,7 @@ export default function Login({ onLogin }) {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Role Selection */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">Login As</label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-sky-500"
-              >
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="parent">Parent</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
+
 
             {/* Email */}
             <div className="mb-4">
@@ -88,7 +101,7 @@ export default function Login({ onLogin }) {
             </div>
 
             {/* Password */}
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-gray-700 font-semibold mb-2">Password</label>
               <div className="relative">
                 <input
@@ -110,6 +123,8 @@ export default function Login({ onLogin }) {
               </div>
             </div>
 
+
+
             {/* Login Button */}
             <button
               type="submit"
@@ -122,38 +137,16 @@ export default function Login({ onLogin }) {
                   Logging in...
                 </>
               ) : (
-                'LOGIN'
+                'Login as Student'
               )}
             </button>
           </form>
 
-          {/* Signup Link */}
-          <div className="text-center mt-4">
-            <p className="text-gray-600">
-              Don't have an account?{' '}
-              <a href="/signup" className="text-sky-500 hover:text-sky-600 font-semibold">
-                Sign Up
-              </a>
-            </p>
-          </div>
 
-          {/* Forgot Password */}
-          <div className="text-center mt-2">
-            <button
-              type="button"
-              onClick={() => setShowForgotPasswordModal(true)}
-              className="text-gray-600 hover:text-gray-700 text-sm"
-            >
-              Forgot Password?
-            </button>
-          </div>
 
-          {/* Demo Credentials */}
-          <div className="mt-8 p-4 bg-sky-50 rounded-lg">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Demo Credentials:</p>
-            <p className="text-xs text-gray-600">Email: demo@edumind.com</p>
-            <p className="text-xs text-gray-600">Password: demo123</p>
-          </div>
+
+
+
         </div>
       </div>
 
