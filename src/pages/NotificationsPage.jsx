@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Search,
   Menu,
@@ -23,10 +22,9 @@ import {
 const NotificationItem = ({ avatar, name, action, target, time, type, attachment, read }) => (
   <div className={`flex gap-4 p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors rounded-xl group ${!read ? 'bg-blue-50/40' : ''}`}>
     <div className="flex-shrink-0 relative">
-      <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white shadow-sm ${
-        type === 'alert' ? 'bg-red-500' : 
-        type === 'success' ? 'bg-green-500' : 'bg-indigo-500'
-      }`}>
+      <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white shadow-sm ${type === 'alert' ? 'bg-red-500' :
+          type === 'success' ? 'bg-green-500' : 'bg-indigo-500'
+        }`}>
         {avatar}
       </div>
       {!read && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 border-2 border-white rounded-full"></span>}
@@ -54,8 +52,7 @@ const NotificationsPage = ({ onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('');
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
-  const [loading, setLoading] = useState(true);
+
 
   React.useEffect(() => {
     const fetchAdminName = () => {
@@ -209,7 +206,7 @@ const NotificationsPage = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

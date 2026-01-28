@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Search,
   Bell,
@@ -200,8 +199,8 @@ const StudentsPage = ({ onLogout }) => {
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.parentName.toLowerCase().includes(searchTerm.toLowerCase());
+      student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.parentName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGrade = selectedGrade === 'All Grades' || student.grade === selectedGrade;
     return matchesSearch && matchesGrade;
   });
@@ -215,7 +214,7 @@ const StudentsPage = ({ onLogout }) => {
   const handleExportCSV = () => {
     // Define headers
     const headers = ['ID', 'Name', 'Date', 'Parent Name', 'City', 'Grade', 'Phone', 'Email'];
-    
+
     // Convert data to CSV rows
     const csvRows = [
       headers.join(','), // Header row
@@ -318,7 +317,7 @@ const StudentsPage = ({ onLogout }) => {
         setNewStudent({ firstName: '', lastName: '', email: '', phone: '', rollNumber: '', className: '' });
       } else {
         if (result.error === 'Invalid token or authorization error.' ||
-            result.error === 'Unauthorized. Admin access required.') {
+          result.error === 'Unauthorized. Admin access required.') {
           alert('Your session has expired. Please login again.');
           logout();
           return;
@@ -364,7 +363,7 @@ const StudentsPage = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -450,7 +449,7 @@ const StudentsPage = ({ onLogout }) => {
                   <Download size={18} />
                   Export
                 </button>
-                <button 
+                <button
                   onClick={() => setShowAddModal(true)}
                   className="bg-primary text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
                 >
@@ -495,14 +494,14 @@ const StudentsPage = ({ onLogout }) => {
                         <td className="px-6 py-4 text-text-secondary">{student.city}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button 
+                            <button
                               onClick={() => window.open(`tel:${student.contact.phone}`, '_self')}
                               className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                               title={`Call ${student.contact.phone}`}
                             >
                               <Phone size={16} />
                             </button>
-                            <button 
+                            <button
                               onClick={() => window.open(`mailto:${student.contact.email}`, '_self')}
                               className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                               title={`Email ${student.contact.email}`}
@@ -518,14 +517,14 @@ const StudentsPage = ({ onLogout }) => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button 
+                            <button
                               onClick={() => handleViewProfile(student)}
                               className="p-2 text-text-secondary hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
                               title="View Profile"
                             >
                               <User size={18} />
                             </button>
-                            <button 
+                            <button
                               onClick={() => confirmDelete(student)}
                               className="p-2 text-text-secondary hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Delete Student"
@@ -546,7 +545,7 @@ const StudentsPage = ({ onLogout }) => {
                   Showing {paginatedStudents.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
                 </p>
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
                     className="px-3 py-1 text-sm text-text-secondary hover:text-primary hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -562,7 +561,7 @@ const StudentsPage = ({ onLogout }) => {
                       {page}
                     </button>
                   ))}
-                  <button 
+                  <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
                     className="px-3 py-1 text-sm text-text-secondary hover:text-primary hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -695,7 +694,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.firstName}
-                    onChange={(e) => setNewStudent({...newStudent, firstName: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, firstName: e.target.value })}
                     placeholder="John"
                   />
                 </div>
@@ -706,7 +705,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.lastName}
-                    onChange={(e) => setNewStudent({...newStudent, lastName: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, lastName: e.target.value })}
                     placeholder="Doe"
                   />
                 </div>
@@ -719,7 +718,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.email}
-                    onChange={(e) => setNewStudent({...newStudent, email: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
                     placeholder="john@example.com"
                   />
                 </div>
@@ -730,7 +729,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.phone}
-                    onChange={(e) => setNewStudent({...newStudent, phone: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
                     placeholder="9876543210"
                   />
                 </div>
@@ -743,7 +742,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.rollNumber}
-                    onChange={(e) => setNewStudent({...newStudent, rollNumber: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, rollNumber: e.target.value })}
                     placeholder="12345"
                   />
                 </div>
@@ -753,7 +752,7 @@ const StudentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newStudent.className}
-                    onChange={(e) => setNewStudent({...newStudent, className: e.target.value})}
+                    onChange={(e) => setNewStudent({ ...newStudent, className: e.target.value })}
                   >
                     <option value="">Select Class</option>
                     {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'].map((cls) => (
@@ -785,7 +784,7 @@ const StudentsPage = ({ onLogout }) => {
               <p className="text-gray-600 mb-4">
                 Credentials have been generated.
               </p>
-              
+
               <div className="w-full bg-gray-50 rounded-xl p-4 text-left space-y-3 border border-gray-100">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Login ID</p>

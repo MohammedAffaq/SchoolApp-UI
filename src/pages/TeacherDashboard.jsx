@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, UserMinus, CheckCircle, XCircle, AlertCircle, Send, X } from 'lucide-react';
+import { Plus, UserMinus, X } from 'lucide-react';
 
 export default function TeacherDashboard() {
   const [staffType, setStaffType] = useState('teaching');
@@ -203,11 +203,10 @@ export default function TeacherDashboard() {
                         <p className="font-semibold text-gray-900">{item.title}</p>
                         <p className="text-sm text-gray-600">{item.department}</p>
                       </div>
-                      <span className={`text-xs font-bold px-2 py-1 rounded ${
-                        item.priority === 'High' ? 'bg-red-100 text-red-800' :
-                        item.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${item.priority === 'High' ? 'bg-red-100 text-red-800' :
+                          item.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                        }`}>
                         {item.priority}
                       </span>
                     </div>
@@ -393,14 +392,14 @@ export default function TeacherDashboard() {
             <form onSubmit={handleAddRequestSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               {requestError && <p className="text-red-500 text-sm">{requestError}</p>}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" required value={newStudentRequest.firstName} onChange={(e) => setNewStudentRequest({...newStudentRequest, firstName: e.target.value})} placeholder="First Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-                <input type="text" required value={newStudentRequest.lastName} onChange={(e) => setNewStudentRequest({...newStudentRequest, lastName: e.target.value})} placeholder="Last Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-                <input type="email" required value={newStudentRequest.email} onChange={(e) => setNewStudentRequest({...newStudentRequest, email: e.target.value})} placeholder="Email" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-                <input type="tel" required value={newStudentRequest.phone} onChange={(e) => setNewStudentRequest({...newStudentRequest, phone: e.target.value})} placeholder="Phone" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-                <input type="text" required value={newStudentRequest.rollNumber} onChange={(e) => setNewStudentRequest({...newStudentRequest, rollNumber: e.target.value})} placeholder="Roll Number" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-                <input type="text" required value={newStudentRequest.className} onChange={(e) => setNewStudentRequest({...newStudentRequest, className: e.target.value})} placeholder="Class (e.g., 10-A)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.firstName} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, firstName: e.target.value })} placeholder="First Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.lastName} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, lastName: e.target.value })} placeholder="Last Name" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="email" required value={newStudentRequest.email} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, email: e.target.value })} placeholder="Email" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="tel" required value={newStudentRequest.phone} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, phone: e.target.value })} placeholder="Phone" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.rollNumber} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, rollNumber: e.target.value })} placeholder="Roll Number" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                <input type="text" required value={newStudentRequest.className} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, className: e.target.value })} placeholder="Class (e.g., 10-A)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
               </div>
-              <textarea value={newStudentRequest.reason} onChange={(e) => setNewStudentRequest({...newStudentRequest, reason: e.target.value})} placeholder="Reason for adding student..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="3"></textarea>
+              <textarea value={newStudentRequest.reason} onChange={(e) => setNewStudentRequest({ ...newStudentRequest, reason: e.target.value })} placeholder="Reason for adding student..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="3"></textarea>
               <div className="pt-2 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowAddRequestModal(false)} className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 font-medium">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium disabled:opacity-50">
@@ -422,8 +421,8 @@ export default function TeacherDashboard() {
             </div>
             <form onSubmit={handleDeleteRequestSubmit} className="p-6 space-y-4">
               {requestError && <p className="text-red-500 text-sm">{requestError}</p>}
-              <input type="text" required value={deleteStudentRequest.studentId} onChange={(e) => setDeleteStudentRequest({...deleteStudentRequest, studentId: e.target.value})} placeholder="Student ID (e.g., STU001)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
-              <textarea required value={deleteStudentRequest.reason} onChange={(e) => setDeleteStudentRequest({...deleteStudentRequest, reason: e.target.value})} placeholder="Reason for removal..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="4"></textarea>
+              <input type="text" required value={deleteStudentRequest.studentId} onChange={(e) => setDeleteStudentRequest({ ...deleteStudentRequest, studentId: e.target.value })} placeholder="Student ID (e.g., STU001)" className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+              <textarea required value={deleteStudentRequest.reason} onChange={(e) => setDeleteStudentRequest({ ...deleteStudentRequest, reason: e.target.value })} placeholder="Reason for removal..." className="w-full px-4 py-2 border border-gray-200 rounded-xl" rows="4"></textarea>
               <div className="pt-2 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowDeleteRequestModal(false)} className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 font-medium">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium disabled:opacity-50">

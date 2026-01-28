@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, RefreshCw, Upload, Shield, GraduationCap, Users, Briefcase, X, Mail, CheckCircle, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, RefreshCw, Shield, GraduationCap, Users, Briefcase, X, Mail, CheckCircle, Trash2 } from 'lucide-react';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('admin');
@@ -35,16 +35,43 @@ export default function HomePage() {
   }, []);
 
   // Check if already logged in
+  // useEffect(() => {
+  //   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  //   const userRole = localStorage.getItem('userRole');
+
+  //   if (isLoggedIn && userRole) {
+  //     if (userRole === 'admin') navigate('/admin');
+  //     else if (userRole === 'student') navigate('/student');
+  //     else if (userRole === 'parent') navigate('/parent');
+  //     else if (userRole === 'teacher') navigate('/teacher');
+  //     else if (userRole === 'staff') navigate('/staff');
+  //   }
+  // }, [navigate]);
+
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const currentUser = localStorage.getItem('currentUser');
     const userRole = localStorage.getItem('userRole');
 
-    if (isLoggedIn && userRole) {
-      if (userRole === 'admin') navigate('/admin');
-      else if (userRole === 'student') navigate('/student');
-      else if (userRole === 'parent') navigate('/parent');
-      else if (userRole === 'teacher') navigate('/teacher');
-      else if (userRole === 'staff') navigate('/staff');
+    if (currentUser && userRole) {
+      switch (userRole) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'student':
+          navigate('/student');
+          break;
+        case 'parent':
+          navigate('/parent');
+          break;
+        case 'teacher':
+          navigate('/teacher');
+          break;
+        case 'staff':
+          navigate('/teacher'); // staff goes to teacher dashboard
+          break;
+        default:
+          break;
+      }
     }
   }, [navigate]);
 
@@ -160,9 +187,10 @@ export default function HomePage() {
         localStorage.setItem('userRole', user.role);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
-        
+
         alert('✅ Login successful!');
-        navigate(targetPath);
+        // navigate(targetPath);
+        navigate(targetPath, { replace: true });
         return;
       }
     } catch (error) {
@@ -183,12 +211,12 @@ export default function HomePage() {
           localUser = roleData;
         }
       }
-      
+
       // Legacy admin check
       if (!localUser && role === 'admin' && registeredUsers.admin && !Array.isArray(registeredUsers.admin)) {
-         if (registeredUsers.admin.email === email.toLowerCase() && registeredUsers.admin.password === password) {
-            localUser = registeredUsers.admin;
-         }
+        if (registeredUsers.admin.email === email.toLowerCase() && registeredUsers.admin.password === password) {
+          localUser = registeredUsers.admin;
+        }
       }
 
       if (localUser) {
@@ -196,9 +224,10 @@ export default function HomePage() {
         localStorage.setItem('userRole', localUser.role);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userName', `${localUser.firstName} ${localUser.lastName}`);
-        
+
         alert('✅ Login successful! (Local Mode)');
-        navigate(targetPath);
+        // navigate(targetPath);
+        navigate(targetPath, { replace: true });
         return;
       }
     } catch (error) {
@@ -245,7 +274,8 @@ export default function HomePage() {
       alert('Please enter a valid email address for Staff.');
       return;
     }
-    performLogin(staffData.staffId, staffData.password, 'staff', '/teacher');
+    // performLogin(staffData.staffId, staffData.password, 'staff', '/teacher');
+    performLogin(staffData.staffId, staffData.password, 'teacher', '/teacher');
   };
 
   const handleResetSystem = () => {
@@ -314,13 +344,13 @@ export default function HomePage() {
         {/* Illustration centered horizontally and vertically */}
         <div className="flex flex-col items-center max-w-lg">
           <div className="animate-float w-full flex justify-center">
-            <img 
-              src="/assets/Img01.png" 
-              alt="Education Illustration" 
-              className="w-[120%] max-w-none h-auto object-contain mb-8 hover:scale-105 transition-transform duration-500" 
+            <img
+              src="/assets/Img01.png"
+              alt="Education Illustration"
+              className="w-[120%] max-w-none h-auto object-contain mb-8 hover:scale-105 transition-transform duration-500"
             />
           </div>
-          
+
           {/* Tagline text */}
           <p className="text-xl text-gray-500 italic font-medium text-center leading-relaxed">
             "Seamlessly Connecting Students, Parents, and Educators"
@@ -330,7 +360,7 @@ export default function HomePage() {
 
       {/* Right Section: Login Card */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <button 
+        <button
           onClick={handleResetSystem}
           className="absolute top-4 right-4 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
           title="Reset System Data (Clear All Users)"
@@ -358,11 +388,10 @@ export default function HomePage() {
                   setActiveTab(role);
                   setIsRobot(false);
                 }}
-                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 capitalize flex flex-col sm:flex-row items-center justify-center gap-2 ${
-                  activeTab === role
-                    ? 'bg-white text-blue-600 shadow-md ring-1 ring-black/5 transform scale-[1.02]'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
-                }`}
+                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 capitalize flex flex-col sm:flex-row items-center justify-center gap-2 ${activeTab === role
+                  ? 'bg-white text-blue-600 shadow-md ring-1 ring-black/5 transform scale-[1.02]'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                  }`}
               >
                 {icon}
                 <span>{role}</span>
@@ -524,7 +553,7 @@ export default function HomePage() {
                     />
                   </div>
 
-                  
+
 
                   {/* Email */}
                   <div>
@@ -664,8 +693,8 @@ export default function HomePage() {
           <div className="text-center text-xs text-gray-500 mt-2 pt-4 border-t border-gray-100">
             {activeTab === 'admin' ? (
               <p className="text-gray-600">
-                Don't have an account? 
-                <button 
+                Don't have an account?
+                <button
                   onClick={() => navigate('/signup')}
                   className="ml-2 text-blue-600 hover:text-blue-700 font-medium underline"
                 >
@@ -685,13 +714,13 @@ export default function HomePage() {
       {showForgotPasswordModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-fadeInScale">
-            <button 
+            <button
               onClick={closeForgotPasswordModal}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={24} />
             </button>
-            
+
             <div className="p-8">
               {fpSubmitted ? (
                 <div className="text-center">
@@ -702,7 +731,7 @@ export default function HomePage() {
                   <p className="text-gray-600 mb-6">
                     We've sent a password reset link to <strong>{fpEmail}</strong>
                   </p>
-                  <button 
+                  <button
                     onClick={closeForgotPasswordModal}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all"
                   >
@@ -732,11 +761,10 @@ export default function HomePage() {
                           if (fpErrors.email) setFpErrors({});
                         }}
                         placeholder="Enter your email"
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                          fpErrors.email 
-                            ? 'border-red-500 focus:ring-red-200' 
-                            : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all ${fpErrors.email
+                          ? 'border-red-500 focus:ring-red-200'
+                          : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                          }`}
                       />
                       {fpErrors.email && (
                         <p className="text-red-500 text-xs mt-1">{fpErrors.email}</p>
@@ -746,9 +774,8 @@ export default function HomePage() {
                     <button
                       type="submit"
                       disabled={fpLoading}
-                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all ${
-                        fpLoading ? 'opacity-70 cursor-not-allowed' : ''
-                      }`}
+                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all ${fpLoading ? 'opacity-70 cursor-not-allowed' : ''
+                        }`}
                     >
                       {fpLoading ? 'Sending...' : 'Send Reset Link'}
                     </button>

@@ -13,7 +13,6 @@ import {
   ChevronDown,
   Download,
   FileText,
-  AlertCircle,
   CheckCircle,
   X,
   Loader2,
@@ -27,7 +26,6 @@ import {
   MessageSquare,
   Settings,
   Phone,
-  Mail,
   MapPin,
   Camera,
   Trash2,
@@ -67,16 +65,14 @@ const messagesData = {
 const ContactItem = ({ contact, isSelected, onClick }) => (
   <div
     onClick={onClick}
-    className={`flex items-center p-4 cursor-pointer transition-colors border-l-4 ${
-      isSelected ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-gray-50'
-    }`}
+    className={`flex items-center p-4 cursor-pointer transition-colors border-l-4 ${isSelected ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-gray-50'
+      }`}
   >
     <div className="relative">
       <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover" />
       <span
-        className={`absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full border-2 border-white ${
-          contact.online ? 'bg-green-500' : 'bg-gray-400'
-        }`}
+        className={`absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full border-2 border-white ${contact.online ? 'bg-green-500' : 'bg-gray-400'
+          }`}
       ></span>
     </div>
     <div className="ml-4 flex-1">
@@ -100,11 +96,10 @@ const MessageBubble = ({ message, onDelete }) => {
         </button>
       )}
       <div
-        className={`max-w-sm lg:max-w-lg px-5 py-3 rounded-3xl shadow-sm ${
-          isOutgoing
-            ? 'bg-green-500 text-white rounded-br-lg'
-            : 'bg-blue-100 text-blue-900 rounded-bl-lg'
-        }`}
+        className={`max-w-sm lg:max-w-lg px-5 py-3 rounded-3xl shadow-sm ${isOutgoing
+          ? 'bg-green-500 text-white rounded-br-lg'
+          : 'bg-blue-100 text-blue-900 rounded-bl-lg'
+          }`}
       >
         {message.attachment && (
           <div className={`flex items-center gap-2 mb-2 p-2 rounded-lg ${isOutgoing ? 'bg-white/20' : 'bg-white/40'}`}>
@@ -211,10 +206,10 @@ const ChatSection = ({ user }) => {
 
     const newMessage = {
       type: 'chat',
-      message: { 
-        id: messages.length + 1, 
-        sender: 'me', 
-        text: inputText, 
+      message: {
+        id: messages.length + 1,
+        sender: 'me',
+        text: inputText,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         attachment: attachment ? { name: attachment.name, type: attachment.type } : null
       },
@@ -270,7 +265,7 @@ const ChatSection = ({ user }) => {
             </div>
           </div>
         </header>
-        
+
         {/* Call Overlay */}
         {activeCall && (
           <div className="absolute inset-0 z-50 bg-slate-900/95 flex flex-col items-center justify-center text-white backdrop-blur-sm">
@@ -279,7 +274,7 @@ const ChatSection = ({ user }) => {
             </div>
             <h3 className="text-2xl font-bold mb-2">{selectedContact.name}</h3>
             <p className="text-slate-400 mb-12 animate-pulse">{activeCall === 'video' ? 'Video Calling...' : 'Voice Calling...'}</p>
-            
+
             <div className="flex items-center gap-6">
               <button onClick={() => setIsMuted(!isMuted)} className={`p-4 rounded-full ${isMuted ? 'bg-white text-slate-900' : 'bg-white/10 hover:bg-white/20'} transition-all`}>
                 {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
@@ -351,42 +346,42 @@ const SimpleBarChart = ({ data, dataKey, xAxisKey, color, id, barRatio = 0.5 }) 
   return (
     <div className="w-full h-full" id={id}>
       <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full overflow-visible">
-         <defs>
-           <linearGradient id={`barGradient-${id}`} x1="0" y1="0" x2="0" y2="1">
-             <stop offset="0%" stopColor={color} stopOpacity="0.8" />
-             <stop offset="100%" stopColor={color} stopOpacity="1" />
-           </linearGradient>
-         </defs>
-         {Array.from({ length: 5 }).map((_, i) => {
-           const y = padding.top + (chartHeight / 4) * i;
-           const value = Math.round(niceMaxVal - (niceMaxVal / 4) * i);
-           const displayValue = value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value;
-           return (
-             <g key={i}>
-               <text x={padding.left - 6} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="6" fontWeight="500" fill="#9ca3af" style={{fontFamily: 'Inter, sans-serif'}}>{displayValue}</text>
-               <line x1={padding.left} y1={y} x2={width} y2={y} stroke="#f3f4f6" strokeWidth="0.5" />
-             </g>
-           );
-         })}
-         {data.map((d, i) => {
-           const val = d[dataKey];
-           const barHeight = (val / niceMaxVal) * chartHeight;
-           const x = padding.left + (chartWidth / data.length) * i + gap / 2;
-           const y = padding.top + chartHeight - barHeight;
-           return (
-             <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}>
-               <rect x={x} y={y} width={barWidth} height={barHeight} fill={`url(#barGradient-${id})`} rx="1" className="transition-all duration-300 hover:opacity-80" />
-               <text x={x + barWidth/2} y={height - 5} textAnchor="middle" fontSize="6" fontWeight="500" fill="#6b7280" style={{fontFamily: 'Inter, sans-serif'}}>{d[xAxisKey] || d.label || d.month || d.subject}</text>
-               {hoveredIndex === i && (
-                 <g>
-                   <rect x={x + barWidth/2 - 12} y={y - 12} width="24" height="8" rx="2" fill="#1f2937" opacity="0.9" />
-                   <text x={x + barWidth/2} y={y - 7} textAnchor="middle" fill="white" fontSize="5" fontWeight="bold" alignmentBaseline="middle">{typeof val === 'number' ? val.toLocaleString() : val}</text>
-                   <polygon points={`${x + barWidth/2 - 3},${y-4} ${x + barWidth/2 + 3},${y-4} ${x + barWidth/2},${y-1}`} fill="#1f2937" opacity="0.9" />
-                 </g>
-               )}
-             </g>
-           );
-         })}
+        <defs>
+          <linearGradient id={`barGradient-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={color} stopOpacity="1" />
+          </linearGradient>
+        </defs>
+        {Array.from({ length: 5 }).map((_, i) => {
+          const y = padding.top + (chartHeight / 4) * i;
+          const value = Math.round(niceMaxVal - (niceMaxVal / 4) * i);
+          const displayValue = value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value;
+          return (
+            <g key={i}>
+              <text x={padding.left - 6} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="6" fontWeight="500" fill="#9ca3af" style={{ fontFamily: 'Inter, sans-serif' }}>{displayValue}</text>
+              <line x1={padding.left} y1={y} x2={width} y2={y} stroke="#f3f4f6" strokeWidth="0.5" />
+            </g>
+          );
+        })}
+        {data.map((d, i) => {
+          const val = d[dataKey];
+          const barHeight = (val / niceMaxVal) * chartHeight;
+          const x = padding.left + (chartWidth / data.length) * i + gap / 2;
+          const y = padding.top + chartHeight - barHeight;
+          return (
+            <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}>
+              <rect x={x} y={y} width={barWidth} height={barHeight} fill={`url(#barGradient-${id})`} rx="1" className="transition-all duration-300 hover:opacity-80" />
+              <text x={x + barWidth / 2} y={height - 5} textAnchor="middle" fontSize="6" fontWeight="500" fill="#6b7280" style={{ fontFamily: 'Inter, sans-serif' }}>{d[xAxisKey] || d.label || d.month || d.subject}</text>
+              {hoveredIndex === i && (
+                <g>
+                  <rect x={x + barWidth / 2 - 12} y={y - 12} width="24" height="8" rx="2" fill="#1f2937" opacity="0.9" />
+                  <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" fill="white" fontSize="5" fontWeight="bold" alignmentBaseline="middle">{typeof val === 'number' ? val.toLocaleString() : val}</text>
+                  <polygon points={`${x + barWidth / 2 - 3},${y - 4} ${x + barWidth / 2 + 3},${y - 4} ${x + barWidth / 2},${y - 1}`} fill="#1f2937" opacity="0.9" />
+                </g>
+              )}
+            </g>
+          );
+        })}
       </svg>
     </div>
   );
@@ -449,51 +444,10 @@ const SimplePieChart = ({ data, colors }) => {
   );
 };
 
-const SimpleLineChart = ({ data, dataKey, xAxisKey, color }) => {
-  const [hoveredPoint, setHoveredPoint] = React.useState(null);
-  const maxVal = Math.max(...data.map(d => d[dataKey]), 0) || 100;
-  
-  const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * 100;
-    const y = 100 - ((d[dataKey] / maxVal) * 80 + 10); 
-    return `${x},${y}`;
-  }).join(' ');
 
-  return (
-    <div className="w-full h-full flex items-end justify-between px-4 pb-6 relative">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full overflow-visible">
-        {[20, 40, 60, 80].map(y => (
-          <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="#f3f4f6" strokeWidth="0.5" />
-        ))}
-        <polygon points={`0,100 ${points} 100,100`} fill={color} fillOpacity="0.1" />
-        <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {data.map((d, i) => {
-          const x = (i / (data.length - 1)) * 100;
-          const y = 100 - ((d[dataKey] / maxVal) * 80 + 10);
-          return (
-            <g key={i} onMouseEnter={() => setHoveredPoint(i)} onMouseLeave={() => setHoveredPoint(null)}>
-              <circle cx={x} cy={y} r={hoveredPoint === i ? 4 : 2} fill="white" stroke={color} strokeWidth="1.5" className="cursor-pointer transition-all duration-200" />
-              {hoveredPoint === i && (
-                <g>
-                   <rect x={x - 10} y={y - 15} width="20" height="10" rx="2" fill="#1f2937" />
-                   <text x={x} y={y - 9} textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">{d[dataKey]}</text>
-                </g>
-              )}
-            </g>
-          );
-        })}
-      </svg>
-      {data.map((d, i) => (
-        <div key={i} className="text-[10px] text-gray-500 absolute bottom-0 transform -translate-x-1/2 font-medium" style={{ left: `${(i / (data.length - 1)) * 100}%` }}>
-          {d[xAxisKey]}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const ParentDashboard = ({ onLogout }) => {
-  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
   const [children, setChildren] = useState([]);
   const [selectedChildId, setSelectedChildId] = useState('');
@@ -503,7 +457,7 @@ const ParentDashboard = ({ onLogout }) => {
   const [marksData, setMarksData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: 'subject', direction: 'ascending' });
   const [marksLoading, setMarksLoading] = useState(false);
-  const [fees, setFees] = useState([
+  const [fees] = useState([
     { id: 1, month: 'January', amount: '$500', status: 'Paid', date: 'Jan 5' },
     { id: 2, month: 'December', amount: '$500', status: 'Paid', date: 'Dec 15' },
     { id: 3, month: 'February', amount: '$500', status: 'Pending', date: 'Due Feb 5' },
@@ -516,9 +470,9 @@ const ParentDashboard = ({ onLogout }) => {
     phone: '',
     address: ''
   });
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileLoading] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date('2026-01-01'));
-  const [calendarView, setCalendarView] = useState('month');
+  const [calendarView] = useState('month');
   const [activeReportTab, setActiveReportTab] = useState('internals1');
   const [assignmentFilter, setAssignmentFilter] = useState('Pending');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -597,51 +551,61 @@ const ParentDashboard = ({ onLogout }) => {
   };
 
   const reportData = {
-    internals1: { title: 'Internal Assessment 1', subjects: [
-      { name: 'Mathematics', marks: '85/100', grade: 'A' },
-      { name: 'Science', marks: '92/100', grade: 'A+' },
-      { name: 'English', marks: '78/100', grade: 'B+' },
-      { name: 'Social Studies', marks: '85/100', grade: 'A' },
-      { name: 'Hindi', marks: '82/100', grade: 'A-' },
-      { name: 'Computer Science', marks: '90/100', grade: 'A+' },
-      { name: 'General Knowledge', marks: '88/100', grade: 'A' }
-    ]},
-    internals2: { title: 'Internal Assessment 2', subjects: [
-      { name: 'Mathematics', marks: '88/100', grade: 'A' },
-      { name: 'Science', marks: '89/100', grade: 'A' },
-      { name: 'English', marks: '82/100', grade: 'A-' },
-      { name: 'Social Studies', marks: '86/100', grade: 'A' },
-      { name: 'Hindi', marks: '84/100', grade: 'A' },
-      { name: 'Computer Science', marks: '92/100', grade: 'A+' },
-      { name: 'General Knowledge', marks: '85/100', grade: 'A' }
-    ]},
-    internals3: { title: 'Internal Assessment 3', subjects: [
-      { name: 'Mathematics', marks: '90/100', grade: 'A+' },
-      { name: 'Science', marks: '94/100', grade: 'A+' },
-      { name: 'English', marks: '85/100', grade: 'A' },
-      { name: 'Social Studies', marks: '88/100', grade: 'A' },
-      { name: 'Hindi', marks: '86/100', grade: 'A' },
-      { name: 'Computer Science', marks: '95/100', grade: 'A+' },
-      { name: 'General Knowledge', marks: '92/100', grade: 'A+' }
-    ]},
-    midterm: { title: 'Mid Term Examination', subjects: [
-      { name: 'Mathematics', marks: '80/100', grade: 'B+' },
-      { name: 'Science', marks: '95/100', grade: 'A+' },
-      { name: 'English', marks: '85/100', grade: 'A' },
-      { name: 'Social Studies', marks: '82/100', grade: 'A-' },
-      { name: 'Hindi', marks: '78/100', grade: 'B+' },
-      { name: 'Computer Science', marks: '90/100', grade: 'A+' },
-      { name: 'General Knowledge', marks: '85/100', grade: 'A' }
-    ]},
-    final: { title: 'Final Examination', subjects: [
-      { name: 'Mathematics', marks: '92/100', grade: 'A+' },
-      { name: 'Science', marks: '96/100', grade: 'A+' },
-      { name: 'English', marks: '88/100', grade: 'A' },
-      { name: 'Social Studies', marks: '90/100', grade: 'A+' },
-      { name: 'Hindi', marks: '85/100', grade: 'A' },
-      { name: 'Computer Science', marks: '98/100', grade: 'A+' },
-      { name: 'General Knowledge', marks: '94/100', grade: 'A+' }
-    ]}
+    internals1: {
+      title: 'Internal Assessment 1', subjects: [
+        { name: 'Mathematics', marks: '85/100', grade: 'A' },
+        { name: 'Science', marks: '92/100', grade: 'A+' },
+        { name: 'English', marks: '78/100', grade: 'B+' },
+        { name: 'Social Studies', marks: '85/100', grade: 'A' },
+        { name: 'Hindi', marks: '82/100', grade: 'A-' },
+        { name: 'Computer Science', marks: '90/100', grade: 'A+' },
+        { name: 'General Knowledge', marks: '88/100', grade: 'A' }
+      ]
+    },
+    internals2: {
+      title: 'Internal Assessment 2', subjects: [
+        { name: 'Mathematics', marks: '88/100', grade: 'A' },
+        { name: 'Science', marks: '89/100', grade: 'A' },
+        { name: 'English', marks: '82/100', grade: 'A-' },
+        { name: 'Social Studies', marks: '86/100', grade: 'A' },
+        { name: 'Hindi', marks: '84/100', grade: 'A' },
+        { name: 'Computer Science', marks: '92/100', grade: 'A+' },
+        { name: 'General Knowledge', marks: '85/100', grade: 'A' }
+      ]
+    },
+    internals3: {
+      title: 'Internal Assessment 3', subjects: [
+        { name: 'Mathematics', marks: '90/100', grade: 'A+' },
+        { name: 'Science', marks: '94/100', grade: 'A+' },
+        { name: 'English', marks: '85/100', grade: 'A' },
+        { name: 'Social Studies', marks: '88/100', grade: 'A' },
+        { name: 'Hindi', marks: '86/100', grade: 'A' },
+        { name: 'Computer Science', marks: '95/100', grade: 'A+' },
+        { name: 'General Knowledge', marks: '92/100', grade: 'A+' }
+      ]
+    },
+    midterm: {
+      title: 'Mid Term Examination', subjects: [
+        { name: 'Mathematics', marks: '80/100', grade: 'B+' },
+        { name: 'Science', marks: '95/100', grade: 'A+' },
+        { name: 'English', marks: '85/100', grade: 'A' },
+        { name: 'Social Studies', marks: '82/100', grade: 'A-' },
+        { name: 'Hindi', marks: '78/100', grade: 'B+' },
+        { name: 'Computer Science', marks: '90/100', grade: 'A+' },
+        { name: 'General Knowledge', marks: '85/100', grade: 'A' }
+      ]
+    },
+    final: {
+      title: 'Final Examination', subjects: [
+        { name: 'Mathematics', marks: '92/100', grade: 'A+' },
+        { name: 'Science', marks: '96/100', grade: 'A+' },
+        { name: 'English', marks: '88/100', grade: 'A' },
+        { name: 'Social Studies', marks: '90/100', grade: 'A+' },
+        { name: 'Hindi', marks: '85/100', grade: 'A' },
+        { name: 'Computer Science', marks: '98/100', grade: 'A+' },
+        { name: 'General Knowledge', marks: '94/100', grade: 'A+' }
+      ]
+    }
   };
 
   const assignments = [
@@ -750,12 +714,12 @@ const ParentDashboard = ({ onLogout }) => {
               grade: student.className || child.grade
             });
           } else {
-             // Fallback for demo/unmatched
-             matchedChildren.push({
-               id: `STU-${Math.floor(100000 + Math.random() * 900000)}`,
-               name: child.name,
-               grade: child.grade
-             });
+            // Fallback for demo/unmatched
+            matchedChildren.push({
+              id: `STU-${Math.floor(100000 + Math.random() * 900000)}`,
+              name: child.name,
+              grade: child.grade
+            });
           }
         });
 
@@ -1029,7 +993,7 @@ const ParentDashboard = ({ onLogout }) => {
   );
 
   const QuickActionButton = ({ icon, label, onClick, color }) => (
-    <button 
+    <button
       onClick={onClick}
       className={`flex flex-col items-center justify-center p-4 rounded-xl ${color} text-white shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1`}
     >
@@ -1081,7 +1045,7 @@ const ParentDashboard = ({ onLogout }) => {
 
       {/* Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -1128,8 +1092,8 @@ const ParentDashboard = ({ onLogout }) => {
               </select>
               <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
-            
-            <div 
+
+            <div
               className="flex items-center gap-3 pl-6 border-l border-gray-100 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
               onClick={() => setActiveSection('Parent Profile')}
             >
@@ -1300,802 +1264,797 @@ const ParentDashboard = ({ onLogout }) => {
                   </div>
                 </>
               )}
-            
+
               {activeSection === 'Performance' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-gray-900">Academic Report</h2>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => fetchMarks(selectedChildId)}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                      disabled={marksLoading}
-                    >
-                      <RefreshCw size={18} className={marksLoading ? 'animate-spin' : ''} />
-                      Refresh
-                    </button>
-                    <button 
-                      onClick={handleDownloadReport}
-                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                      <Download size={18} />
-                      Download Report
-                    </button>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-900">Academic Report</h2>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => fetchMarks(selectedChildId)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        disabled={marksLoading}
+                      >
+                        <RefreshCw size={18} className={marksLoading ? 'animate-spin' : ''} />
+                        Refresh
+                      </button>
+                      <button
+                        onClick={handleDownloadReport}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                      >
+                        <Download size={18} />
+                        Download Report
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm mb-6">
+                  <div className="bg-white p-6 rounded-2xl shadow-sm mb-6">
                     <h3 className="font-bold text-gray-700 mb-4">Performance Trends</h3>
                     <div className="h-56">
-                        <SimpleBarChart 
-                            data={performanceTrendData} 
-                            dataKey="average" 
-                            xAxisKey="exam"
-                            color="#6366f1" 
-                            id="performance-trend-chart"
-                            barRatio={0.3}
-                        />
+                      <SimpleBarChart
+                        data={performanceTrendData}
+                        dataKey="average"
+                        xAxisKey="exam"
+                        color="#6366f1"
+                        id="performance-trend-chart"
+                        barRatio={0.3}
+                      />
                     </div>
-                </div>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
-                  <div className="p-6 border-b border-gray-100">
-                    <h3 className="font-bold text-gray-900">Subject-wise Performance</h3>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Grade</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Remark</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {performanceData.map((sub, i) => (
-                          <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{sub.subject}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{sub.marks}</td>
-                            <td className="px-6 py-4 text-sm font-bold text-indigo-600">{sub.grade}</td>
-                            <td className="px-6 py-4 text-sm">
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                sub.remark === 'Outstanding' ? 'bg-purple-100 text-purple-700' :
-                                sub.remark === 'Excellent' ? 'bg-green-100 text-green-700' :
-                                sub.remark === 'Good' ? 'bg-blue-100 text-blue-700' :
-                                'bg-yellow-100 text-yellow-700'
-                              }`}>
-                                {sub.remark}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                {marksLoading ? (
-                  <div className="bg-white rounded-2xl p-12 text-center shadow-sm flex justify-center">
-                    <Loader2 className="animate-spin text-indigo-600" size={40} />
-                  </div>
-                ) : marksData.length > 0 ? (
-                  marksData.map((record, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900">{record.examType}</h3>
-                          <span className="text-sm text-gray-500">{new Date(record.date).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('subject')}>
-                                <div className="flex items-center gap-1">
-                                  Subject
-                                  <ArrowUpDown size={14} className="text-gray-400" />
-                                </div>
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
-                              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
-                              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('percentage')}>
-                                <div className="flex items-center gap-1">
-                                  Percentage
-                                  <ArrowUpDown size={14} className="text-gray-400" />
-                                </div>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            {[...record.subjects].sort((a, b) => {
-                              if (sortConfig.key === 'percentage') {
-                                const percentageA = a.total > 0 ? (a.marks / a.total) * 100 : 0;
-                                const percentageB = b.total > 0 ? (b.marks / b.total) * 100 : 0;
-                                if (percentageA < percentageB) {
-                                  return sortConfig.direction === 'ascending' ? -1 : 1;
-                                }
-                                if (percentageA > percentageB) {
-                                  return sortConfig.direction === 'ascending' ? 1 : -1;
-                                }
-                                return 0;
-                              }
-                              if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-                              if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-                              return 0;
-                            })
-                            .map((sub, i) => (
-                              <tr key={i} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900">{sub.subject}</td>
-                                <td className="px-6 py-4 text-sm text-gray-600">{sub.marks}</td>
-                                <td className="px-6 py-4 text-sm text-gray-600">{sub.total}</td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {sub.total > 0 ? ((sub.marks / sub.total) * 100).toFixed(2) : '0.00'}%
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
+                    <div className="p-6 border-b border-gray-100">
+                      <h3 className="font-bold text-gray-900">Subject-wise Performance</h3>
                     </div>
-                  ))
-                ) : (
-                  <div className="bg-white rounded-2xl p-12 text-center shadow-sm">
-                    <FileText className="mx-auto text-gray-300 mb-4" size={48} />
-                    <h3 className="text-lg font-medium text-gray-900">No performance records found</h3>
-                    <p className="text-gray-500 mt-1">Marks will appear here once uploaded by teachers.</p>
-                  </div>
-                )}
-                </div>
-              )}
-            
-              {activeSection === 'Attendance' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-gray-900">Attendance Overview</h2>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                    <p className="text-xs text-green-600 font-bold uppercase">Present Days</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">205</p>
-                  </div>
-                  <div className="p-4 bg-red-50 rounded-xl border border-red-100">
-                    <p className="text-xs text-red-600 font-bold uppercase">Absent Days</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">15</p>
-                  </div>
-                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                    <p className="text-xs text-blue-600 font-bold uppercase">Percentage</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">93%</p>
-                  </div>
-                  <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                    <p className="text-xs text-purple-600 font-bold uppercase">Working Days</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">220</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm">
-                        <h3 className="font-bold text-gray-700 mb-4">Monthly Attendance</h3>
-                        <div className="h-56">
-                            <SimpleBarChart
-                                data={attendanceTrendData}
-                                dataKey="percentage"
-                                color="#10b981"
-                                id="attendance-chart"
-                            />
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
-                    <h3 className="font-bold text-gray-700 mb-4">Recent Attendance Log</h3>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Grade</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Remark</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {performanceData.map((sub, i) => (
+                            <tr key={i} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-medium text-gray-900">{sub.subject}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{sub.marks}</td>
+                              <td className="px-6 py-4 text-sm font-bold text-indigo-600">{sub.grade}</td>
+                              <td className="px-6 py-4 text-sm">
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${sub.remark === 'Outstanding' ? 'bg-purple-100 text-purple-700' :
+                                  sub.remark === 'Excellent' ? 'bg-green-100 text-green-700' :
+                                    sub.remark === 'Good' ? 'bg-blue-100 text-blue-700' :
+                                      'bg-yellow-100 text-yellow-700'
+                                  }`}>
+                                  {sub.remark}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  {marksLoading ? (
+                    <div className="bg-white rounded-2xl p-12 text-center shadow-sm flex justify-center">
+                      <Loader2 className="animate-spin text-indigo-600" size={40} />
+                    </div>
+                  ) : marksData.length > 0 ? (
+                    marksData.map((record, idx) => (
+                      <div key={idx} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">{record.examType}</h3>
+                            <span className="text-sm text-gray-500">{new Date(record.date).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
                             <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Student Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Date</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Check In</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Check Out</th>
-                                </tr>
+                              <tr>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('subject')}>
+                                  <div className="flex items-center gap-1">
+                                    Subject
+                                    <ArrowUpDown size={14} className="text-gray-400" />
+                                  </div>
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('percentage')}>
+                                  <div className="flex items-center gap-1">
+                                    Percentage
+                                    <ArrowUpDown size={14} className="text-gray-400" />
+                                  </div>
+                                </th>
+                              </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {getAttendanceData().map((row, i) => (
-                                    <tr key={i} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 text-sm text-gray-900">{getStudentDetails().name}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900">{row.date}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${row.status === 'Present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                {row.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{row.in}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{row.out}</td>
-                                    </tr>
+                              {[...record.subjects].sort((a, b) => {
+                                if (sortConfig.key === 'percentage') {
+                                  const percentageA = a.total > 0 ? (a.marks / a.total) * 100 : 0;
+                                  const percentageB = b.total > 0 ? (b.marks / b.total) * 100 : 0;
+                                  if (percentageA < percentageB) {
+                                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                                  }
+                                  if (percentageA > percentageB) {
+                                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                                  }
+                                  return 0;
+                                }
+                                if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
+                                if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
+                                return 0;
+                              })
+                                .map((sub, i) => (
+                                  <tr key={i} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{sub.subject}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{sub.marks}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{sub.total}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                      {sub.total > 0 ? ((sub.marks / sub.total) * 100).toFixed(2) : '0.00'}%
+                                    </td>
+                                  </tr>
                                 ))}
                             </tbody>
-                        </table>
+                          </table>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-white rounded-2xl p-12 text-center shadow-sm">
+                      <FileText className="mx-auto text-gray-300 mb-4" size={48} />
+                      <h3 className="text-lg font-medium text-gray-900">No performance records found</h3>
+                      <p className="text-gray-500 mt-1">Marks will appear here once uploaded by teachers.</p>
                     </div>
+                  )}
                 </div>
-              </div>
               )}
-            
-              {activeSection === 'Fee Payment' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Fee Status</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white p-6 rounded-2xl shadow-sm">
-                    <h3 className="font-bold text-gray-900 mb-4">Fee Payment Trend</h3>
-                    <div className="h-56">
-                      <SimpleBarChart data={feeTrendData} dataKey="amount" color="#f97316" id="fee-payment-trend-chart" barRatio={0.3} />
-                    </div>
-                  </div>
-                  <div className="bg-white p-6 rounded-2xl shadow-sm">
-                    <h3 className="font-bold text-gray-900 mb-4">Fee Breakdown</h3>
-                    <div className="h-56">
-                      <SimplePieChart data={feeBreakdownData} colors={['#8b5cf6', '#f97316', '#10b981', '#3b82f6']} />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Month</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Due Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {fees.map((fee) => (
-                          <tr key={fee.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{fee.month}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{fee.amount}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{fee.date}</td>
-                            <td className="px-6 py-4">
-                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                fee.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                              }`}>
-                                {fee.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              {fee.status === 'Paid' ? (
-                                <button onClick={() => handleDownloadReceipt(fee)} className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
-                                  <Download size={14} /> Receipt
-                                </button>
-                              ) : (
-                                <button onClick={() => handlePayFee(fee)} className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
-                                  Pay Now
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Report Cards' && (
-              <div className="space-y-8">
-                <h2 className="text-3xl font-bold text-gray-900">Report Cards</h2>
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="relative">
-                      <select 
-                        value={selectedReportClass}
-                        onChange={(e) => setSelectedReportClass(e.target.value)}
-                        className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-gray-700"
-                      >
-                        {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map(cls => <option key={cls} value={cls}>{cls}</option>)}
-                      </select>
-                      <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    </div>
-                    <button 
-                      onClick={handleDownloadReport}
-                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                      <Download size={18} /> Download PDF
-                    </button>
+
+              {activeSection === 'Attendance' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-900">Attendance Overview</h2>
                   </div>
 
-                  <div className="flex gap-4 border-b border-gray-200 mb-6 overflow-x-auto">
-                    {Object.keys(reportData).map((key) => (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-4 bg-green-50 rounded-xl border border-green-100">
+                      <p className="text-xs text-green-600 font-bold uppercase">Present Days</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">205</p>
+                    </div>
+                    <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+                      <p className="text-xs text-red-600 font-bold uppercase">Absent Days</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">15</p>
+                    </div>
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <p className="text-xs text-blue-600 font-bold uppercase">Percentage</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">93%</p>
+                    </div>
+                    <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                      <p className="text-xs text-purple-600 font-bold uppercase">Working Days</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">220</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm">
+                      <h3 className="font-bold text-gray-700 mb-4">Monthly Attendance</h3>
+                      <div className="h-56">
+                        <SimpleBarChart
+                          data={attendanceTrendData}
+                          dataKey="percentage"
+                          color="#10b981"
+                          id="attendance-chart"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="font-bold text-gray-700 mb-4">Recent Attendance Log</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Student Name</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Check In</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Check Out</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {getAttendanceData().map((row, i) => (
+                            <tr key={i} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm text-gray-900">{getStudentDetails().name}</td>
+                              <td className="px-6 py-4 text-sm text-gray-900">{row.date}</td>
+                              <td className="px-6 py-4">
+                                <span className={`px-2 py-1 rounded text-xs font-bold ${row.status === 'Present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                  {row.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{row.in}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{row.out}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Fee Payment' && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-gray-900">Fee Status</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm">
+                      <h3 className="font-bold text-gray-900 mb-4">Fee Payment Trend</h3>
+                      <div className="h-56">
+                        <SimpleBarChart data={feeTrendData} dataKey="amount" color="#f97316" id="fee-payment-trend-chart" barRatio={0.3} />
+                      </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-2xl shadow-sm">
+                      <h3 className="font-bold text-gray-900 mb-4">Fee Breakdown</h3>
+                      <div className="h-56">
+                        <SimplePieChart data={feeBreakdownData} colors={['#8b5cf6', '#f97316', '#10b981', '#3b82f6']} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Month</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Due Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {fees.map((fee) => (
+                            <tr key={fee.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-medium text-gray-900">{fee.month}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{fee.amount}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{fee.date}</td>
+                              <td className="px-6 py-4">
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${fee.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                  }`}>
+                                  {fee.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                {fee.status === 'Paid' ? (
+                                  <button onClick={() => handleDownloadReceipt(fee)} className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
+                                    <Download size={14} /> Receipt
+                                  </button>
+                                ) : (
+                                  <button onClick={() => handlePayFee(fee)} className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                                    Pay Now
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Report Cards' && (
+                <div className="space-y-8">
+                  <h2 className="text-3xl font-bold text-gray-900">Report Cards</h2>
+                  <div className="bg-white rounded-2xl shadow-sm p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="relative">
+                        <select
+                          value={selectedReportClass}
+                          onChange={(e) => setSelectedReportClass(e.target.value)}
+                          className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-gray-700"
+                        >
+                          {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                      </div>
                       <button
-                        key={key}
-                        onClick={() => setActiveReportTab(key)}
-                        className={`pb-3 px-4 text-sm font-medium transition-colors whitespace-nowrap ${activeReportTab === key ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        onClick={handleDownloadReport}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                       >
-                        {reportData[key].title}
+                        <Download size={18} /> Download PDF
+                      </button>
+                    </div>
+
+                    <div className="flex gap-4 border-b border-gray-200 mb-6 overflow-x-auto">
+                      {Object.keys(reportData).map((key) => (
+                        <button
+                          key={key}
+                          onClick={() => setActiveReportTab(key)}
+                          className={`pb-3 px-4 text-sm font-medium transition-colors whitespace-nowrap ${activeReportTab === key ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                          {reportData[key].title}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-900">{reportData[activeReportTab].title} - {selectedReportClass}</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Grade</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {reportData[activeReportTab].subjects.map((subject, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-medium text-gray-900">{subject.name}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{subject.marks}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">
+                                <span className={`px-2 py-1 rounded text-xs font-bold ${subject.grade.startsWith('A') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{subject.grade}</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                      <h4 className="font-bold text-gray-800 mb-2">Teacher Feedback</h4>
+                      <p className="text-gray-600 text-sm italic">"Excellent performance in Science and Mathematics. Needs to focus more on English literature. Overall a very good term."</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Assignments' && (
+                <div className="space-y-8">
+                  <h2 className="text-3xl font-bold text-gray-900">Assignments</h2>
+
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {['All', 'Pending', 'Submitted', 'Overdue'].map(filter => (
+                      <button
+                        key={filter}
+                        onClick={() => setAssignmentFilter(filter)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${assignmentFilter === filter ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                          }`}
+                      >
+                        {filter}
                       </button>
                     ))}
                   </div>
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">{reportData[activeReportTab].title} - {selectedReportClass}</h3>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Grade</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {reportData[activeReportTab].subjects.map((subject, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{subject.name}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{subject.marks}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">
-                              <span className={`px-2 py-1 rounded text-xs font-bold ${subject.grade.startsWith('A') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{subject.grade}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <h4 className="font-bold text-gray-800 mb-2">Teacher Feedback</h4>
-                    <p className="text-gray-600 text-sm italic">"Excellent performance in Science and Mathematics. Needs to focus more on English literature. Overall a very good term."</p>
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Assignments' && (
-              <div className="space-y-8">
-                <h2 className="text-3xl font-bold text-gray-900">Assignments</h2>
-                
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {['All', 'Pending', 'Submitted', 'Overdue'].map(filter => (
-                    <button
-                      key={filter}
-                      onClick={() => setAssignmentFilter(filter)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                        assignmentFilter === filter ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredAssignments.map((assignment) => (
-                    <div key={assignment.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wide">{assignment.subject}</span>
-                          <h3 className="text-lg font-bold text-gray-900 mt-2">{assignment.title}</h3>
-                          <p className="text-xs text-gray-500 mt-1">Teacher: {assignment.teacher}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredAssignments.map((assignment) => (
+                      <div key={assignment.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wide">{assignment.subject}</span>
+                            <h3 className="text-lg font-bold text-gray-900 mt-2">{assignment.title}</h3>
+                            <p className="text-xs text-gray-500 mt-1">Teacher: {assignment.teacher}</p>
+                          </div>
+                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${assignment.status === 'Submitted' ? 'bg-green-100 text-green-800' :
+                            assignment.status === 'Overdue' ? 'bg-red-100 text-red-800' :
+                              'bg-orange-100 text-orange-800'
+                            }`}>
+                            {assignment.status}
+                          </div>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          assignment.status === 'Submitted' ? 'bg-green-100 text-green-800' : 
-                          assignment.status === 'Overdue' ? 'bg-red-100 text-red-800' : 
-                          'bg-orange-100 text-orange-800'
-                        }`}>
-                          {assignment.status}
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{assignment.description}</p>
-                      <div className="flex justify-between items-center pt-4 border-t border-gray-50">
-                        <div className="text-sm text-gray-500">
-                          <span className="block text-xs text-gray-400">Due Date</span>
-                          {assignment.dueDate}
-                        </div>
-                        <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-                          View Details →
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Exam Schedule' && (
-              <div className="space-y-8">
-                <h2 className="text-3xl font-bold text-gray-900">Exam Schedule</h2>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 className="font-bold text-gray-900">Upcoming Exams</h3>
-                    <div className="flex items-center gap-4">
-                      <select
-                        value={examFilter}
-                        onChange={(e) => setExamFilter(e.target.value)}
-                        className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 outline-none"
-                      >
-                        <option value="All">All Types</option>
-                        <option value="Final">Final</option>
-                        <option value="Midterm">Midterm</option>
-                        <option value="Unit Test">Unit Test</option>
-                      </select>
-                      <button onClick={handleDownloadSchedule} className="text-indigo-600 text-sm font-medium hover:underline">Download Schedule</button>
-                    </div>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Time</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Room</th>
-                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {filteredExamSchedule.map((exam) => (
-                          <tr key={exam.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{exam.subject}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{exam.date}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{exam.time}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{exam.room}</td>
-                            <td className="px-6 py-4">
-                              <span className="px-2 py-1 rounded text-xs font-bold bg-indigo-100 text-indigo-800">
-                                {exam.type}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Bus Tracker' && (
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-gray-900">Bus Tracker</h2>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2 bg-gray-200 rounded-2xl h-96 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-slate-200 flex items-center justify-center">
-                      <span className="text-gray-400 font-medium flex items-center gap-2"><MapPin /> Map View Placeholder</span>
-                    </div>
-                    {/* Mock Map UI */}
-                    <div className="absolute bottom-4 left-4 bg-white p-4 rounded-xl shadow-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600"><Bus size={20} /></div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">Bus No. 42</p>
-                          <p className="text-xs text-gray-500">Arriving in 5 mins</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm">
-                      <h3 className="font-bold text-gray-900 mb-4">Driver Details</h3>
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-500"><User /></div>
-                        <div>
-                          <p className="font-bold text-gray-900">Rajesh Kumar</p>
-                          <p className="text-sm text-gray-500">Driver</p>
-                          <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><Phone size={12} /> +91 98765 43210</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => window.open('tel:+919876543210', '_self')}
-                          className="flex-1 py-2 bg-green-50 text-green-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition-colors"
-                        >
-                          <Phone size={16} /> Call
-                        </button>
-                        <button 
-                          onClick={() => window.open('https://wa.me/919876543210', '_blank')}
-                          className="flex-1 py-2 bg-green-50 text-green-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition-colors"
-                        >
-                          <MessageSquare size={16} /> WhatsApp
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm">
-                      <h3 className="font-bold text-gray-900 mb-4">Route Info</h3>
-                      <div className="space-y-4 relative">
-                        <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-gray-100"></div>
-                        <div className="relative pl-6">
-                          <div className="absolute left-0 top-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                          <p className="text-sm font-bold text-gray-900">School</p>
-                          <p className="text-xs text-gray-500">Departed 2:30 PM</p>
-                        </div>
-                        <div className="relative pl-6">
-                          <div className="absolute left-0 top-1 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white animate-pulse"></div>
-                          <p className="text-sm font-bold text-gray-900">Current Location</p>
-                          <p className="text-xs text-indigo-600 font-medium">Main Street</p>
-                        </div>
-                        <div className="relative pl-6">
-                          <div className="absolute left-0 top-1 w-4 h-4 bg-gray-300 rounded-full border-2 border-white"></div>
-                          <p className="text-sm font-bold text-gray-900">Home Drop</p>
-                          <p className="text-xs text-gray-500">Est. 3:15 PM</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Settings' && (
-              <div className="space-y-8">
-                <h2 className="text-3xl font-bold text-gray-900">Settings</h2>
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Preferences</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">Email Notifications</span>
-                      <button className="w-12 h-6 bg-indigo-600 rounded-full relative">
-                        <span className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></span>
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">SMS Alerts</span>
-                      <button className="w-12 h-6 bg-gray-200 rounded-full relative">
-                        <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></span>
-                      </button>
-                    </div>
-                    <div className="pt-4 border-t border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-4">Security</h4>
-                      <button onClick={() => setShowPasswordModal(true)} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Change Password</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Parent Profile' && (
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
-                  <div className="px-8 pb-8">
-                    <div className="relative flex justify-between items-end -mt-12 mb-8">
-                      <div className="flex items-start gap-6">
-                        <div className="relative group">
-                          {parentImage ? (
-                            <img src={parentImage} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                          ) : (
-                            <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-md flex items-center justify-center text-3xl font-bold text-indigo-600">
-                              {user?.firstName?.charAt(0)}
-                            </div>
-                          )}
-                          {isEditingProfile && (
-                            <>
-                              <button onClick={() => fileInputRef.current.click()} className="absolute bottom-0 right-0 bg-indigo-600 text-white p-1.5 rounded-full hover:bg-indigo-700 transition-colors shadow-sm border-2 border-white z-10">
-                                <Camera size={14} />
-                              </button>
-                              {parentImage && (
-                                <button onClick={handleRemoveImage} className="absolute top-0 right-0 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-sm border-2 border-white z-10">
-                                  <Trash2 size={14} />
-                                </button>
-                              )}
-                            </>
-                          )}
-                        </div>
-                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-                        <div className="mt-12 mb-2">
-                          <h2 className="text-2xl font-bold text-gray-900">{user?.firstName} {user?.lastName}</h2>
-                          <p className="text-gray-500 whitespace-nowrap">Parent / Guardian</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setIsEditingProfile(!isEditingProfile)}
-                        className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-medium hover:bg-indigo-100 transition-colors flex items-center gap-2"
-                      >
-                        {isEditingProfile ? <X size={18} /> : <Edit2 size={18} />}
-                        {isEditingProfile ? 'Cancel' : 'Edit Profile'}
-                      </button>
-                    </div>
-
-                    <form onSubmit={handleProfileUpdate}>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                          <input
-                            type="text"
-                            disabled={!isEditingProfile}
-                            value={profileFormData.firstName}
-                            onChange={(e) => setProfileFormData({...profileFormData, firstName: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                          <input
-                            type="text"
-                            disabled={!isEditingProfile}
-                            value={profileFormData.lastName}
-                            onChange={(e) => setProfileFormData({...profileFormData, lastName: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                          <input
-                            type="email"
-                            disabled={!isEditingProfile}
-                            value={profileFormData.email}
-                            onChange={(e) => setProfileFormData({...profileFormData, email: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                          <input
-                            type="tel"
-                            disabled={!isEditingProfile}
-                            value={profileFormData.phone}
-                            onChange={(e) => setProfileFormData({...profileFormData, phone: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                          <input
-                            type="text"
-                            disabled={!isEditingProfile}
-                            value={profileFormData.address}
-                            onChange={(e) => setProfileFormData({...profileFormData, address: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
-                          />
-                        </div>
-                      </div>
-
-                      {isEditingProfile && (
-                        <div className="mt-8 flex justify-end">
-                          <button
-                            type="submit"
-                            className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2"
-                          >
-                            <Save size={18} />
-                            Save Changes
+                        <p className="text-sm text-gray-600 mb-4 line-clamp-2">{assignment.description}</p>
+                        <div className="flex justify-between items-center pt-4 border-t border-gray-50">
+                          <div className="text-sm text-gray-500">
+                            <span className="block text-xs text-gray-400">Due Date</span>
+                            {assignment.dueDate}
+                          </div>
+                          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                            View Details →
                           </button>
                         </div>
-                      )}
-                    </form>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
               )}
-            
-              {activeSection === 'Notifications' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-3xl font-bold text-gray-900">Notifications</h2>
-                  <div className="flex gap-4">
-                    {notifications.some(n => !n.read) && (
-                      <button 
-                        onClick={markAllAsRead}
-                        className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                      >
-                        Mark all as read
-                      </button>
-                    )}
-                    {notifications.length > 0 && (
-                      <button 
-                        onClick={clearAllNotifications}
-                        className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
-                      >
-                        Clear all
-                      </button>
-                    )}
+
+              {activeSection === 'Exam Schedule' && (
+                <div className="space-y-8">
+                  <h2 className="text-3xl font-bold text-gray-900">Exam Schedule</h2>
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                      <h3 className="font-bold text-gray-900">Upcoming Exams</h3>
+                      <div className="flex items-center gap-4">
+                        <select
+                          value={examFilter}
+                          onChange={(e) => setExamFilter(e.target.value)}
+                          className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 outline-none"
+                        >
+                          <option value="All">All Types</option>
+                          <option value="Final">Final</option>
+                          <option value="Midterm">Midterm</option>
+                          <option value="Unit Test">Unit Test</option>
+                        </select>
+                        <button onClick={handleDownloadSchedule} className="text-indigo-600 text-sm font-medium hover:underline">Download Schedule</button>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Time</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Room</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {filteredExamSchedule.map((exam) => (
+                            <tr key={exam.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-medium text-gray-900">{exam.subject}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{exam.date}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{exam.time}</td>
+                              <td className="px-6 py-4 text-sm text-gray-600">{exam.room}</td>
+                              <td className="px-6 py-4">
+                                <span className="px-2 py-1 rounded text-xs font-bold bg-indigo-100 text-indigo-800">
+                                  {exam.type}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <div className="space-y-4">
-                    {notifications.map((notification) => {
-                      let icon, styles;
-                      switch (notification.type) {
-                        case 'fee':
-                          icon = <Bell size={20} />;
-                          styles = { bg: 'bg-blue-50', border: 'border-blue-100', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' };
-                          break;
-                        case 'assignment':
-                          icon = <CheckCircle size={20} />;
-                          styles = { bg: 'bg-green-50', border: 'border-green-100', iconBg: 'bg-green-100', iconColor: 'text-green-600' };
-                          break;
-                        case 'meeting':
-                          icon = <Calendar size={20} />;
-                          styles = { bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600' };
-                          break;
-                        default:
-                          icon = <Bell size={20} />;
-                          styles = { bg: 'bg-gray-50', border: 'border-gray-100', iconBg: 'bg-gray-100', iconColor: 'text-gray-600' };
-                      }
+              )}
 
-                      return (
-                        <div 
-                          key={notification.id} 
-                          className={`p-4 rounded-xl border flex gap-4 transition-all ${
-                            notification.read 
-                              ? 'bg-white border-gray-100 opacity-60' 
-                              : `${styles.bg} ${styles.border}`
-                          }`}
-                        >
-                          <div className={`p-2 rounded-full h-fit ${styles.iconBg} ${styles.iconColor}`}>
-                            {icon}
+              {activeSection === 'Bus Tracker' && (
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold text-gray-900">Bus Tracker</h2>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 bg-gray-200 rounded-2xl h-96 flex items-center justify-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-slate-200 flex items-center justify-center">
+                        <span className="text-gray-400 font-medium flex items-center gap-2"><MapPin /> Map View Placeholder</span>
+                      </div>
+                      {/* Mock Map UI */}
+                      <div className="absolute bottom-4 left-4 bg-white p-4 rounded-xl shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600"><Bus size={20} /></div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">Bus No. 42</p>
+                            <p className="text-xs text-gray-500">Arriving in 5 mins</p>
                           </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <h4 className={`font-bold ${notification.read ? 'text-gray-600' : 'text-gray-900'}`}>
-                                {notification.title}
-                              </h4>
-                              <span className="text-xs text-gray-500">{notification.time}</span>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                            {!notification.read && (
-                              <button 
-                                onClick={() => markNotificationAsRead(notification.id)}
-                                className="text-xs font-semibold text-indigo-600 mt-2 hover:text-indigo-800"
-                              >
-                                Mark as read
-                              </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="bg-white p-6 rounded-2xl shadow-sm">
+                        <h3 className="font-bold text-gray-900 mb-4">Driver Details</h3>
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-500"><User /></div>
+                          <div>
+                            <p className="font-bold text-gray-900">Rajesh Kumar</p>
+                            <p className="text-sm text-gray-500">Driver</p>
+                            <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><Phone size={12} /> +91 98765 43210</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => window.open('tel:+919876543210', '_self')}
+                            className="flex-1 py-2 bg-green-50 text-green-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition-colors"
+                          >
+                            <Phone size={16} /> Call
+                          </button>
+                          <button
+                            onClick={() => window.open('https://wa.me/919876543210', '_blank')}
+                            className="flex-1 py-2 bg-green-50 text-green-700 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition-colors"
+                          >
+                            <MessageSquare size={16} /> WhatsApp
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-2xl shadow-sm">
+                        <h3 className="font-bold text-gray-900 mb-4">Route Info</h3>
+                        <div className="space-y-4 relative">
+                          <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-gray-100"></div>
+                          <div className="relative pl-6">
+                            <div className="absolute left-0 top-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                            <p className="text-sm font-bold text-gray-900">School</p>
+                            <p className="text-xs text-gray-500">Departed 2:30 PM</p>
+                          </div>
+                          <div className="relative pl-6">
+                            <div className="absolute left-0 top-1 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white animate-pulse"></div>
+                            <p className="text-sm font-bold text-gray-900">Current Location</p>
+                            <p className="text-xs text-indigo-600 font-medium">Main Street</p>
+                          </div>
+                          <div className="relative pl-6">
+                            <div className="absolute left-0 top-1 w-4 h-4 bg-gray-300 rounded-full border-2 border-white"></div>
+                            <p className="text-sm font-bold text-gray-900">Home Drop</p>
+                            <p className="text-xs text-gray-500">Est. 3:15 PM</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Settings' && (
+                <div className="space-y-8">
+                  <h2 className="text-3xl font-bold text-gray-900">Settings</h2>
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Preferences</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700">Email Notifications</span>
+                        <button className="w-12 h-6 bg-indigo-600 rounded-full relative">
+                          <span className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></span>
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700">SMS Alerts</span>
+                        <button className="w-12 h-6 bg-gray-200 rounded-full relative">
+                          <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></span>
+                        </button>
+                      </div>
+                      <div className="pt-4 border-t border-gray-100">
+                        <h4 className="font-semibold text-gray-900 mb-4">Security</h4>
+                        <button onClick={() => setShowPasswordModal(true)} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Change Password</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Parent Profile' && (
+                <div className="max-w-4xl mx-auto">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+                    <div className="px-8 pb-8">
+                      <div className="relative flex justify-between items-end -mt-12 mb-8">
+                        <div className="flex items-start gap-6">
+                          <div className="relative group">
+                            {parentImage ? (
+                              <img src={parentImage} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                            ) : (
+                              <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-md flex items-center justify-center text-3xl font-bold text-indigo-600">
+                                {user?.firstName?.charAt(0)}
+                              </div>
+                            )}
+                            {isEditingProfile && (
+                              <>
+                                <button onClick={() => fileInputRef.current.click()} className="absolute bottom-0 right-0 bg-indigo-600 text-white p-1.5 rounded-full hover:bg-indigo-700 transition-colors shadow-sm border-2 border-white z-10">
+                                  <Camera size={14} />
+                                </button>
+                                {parentImage && (
+                                  <button onClick={handleRemoveImage} className="absolute top-0 right-0 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-sm border-2 border-white z-10">
+                                    <Trash2 size={14} />
+                                  </button>
+                                )}
+                              </>
                             )}
                           </div>
+                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                          <div className="mt-12 mb-2">
+                            <h2 className="text-2xl font-bold text-gray-900">{user?.firstName} {user?.lastName}</h2>
+                            <p className="text-gray-500 whitespace-nowrap">Parent / Guardian</p>
+                          </div>
                         </div>
-                      );
-                    })}
-                    {notifications.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        No notifications available
+                        <button
+                          onClick={() => setIsEditingProfile(!isEditingProfile)}
+                          className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-medium hover:bg-indigo-100 transition-colors flex items-center gap-2"
+                        >
+                          {isEditingProfile ? <X size={18} /> : <Edit2 size={18} />}
+                          {isEditingProfile ? 'Cancel' : 'Edit Profile'}
+                        </button>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              )}
-            
-              {activeSection === 'Student Profile' && (
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="h-32 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-                  <div className="px-8 pb-8">
-                    <div className="relative flex justify-between items-end -mt-12 mb-8">
-                      <div className="flex items-end gap-6">
-                        <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-md flex items-center justify-center text-3xl font-bold text-blue-600">
-                          {getStudentDetails().name.charAt(0)}
-                        </div>
-                        <div className="translate-y-2">
-                          <h2 className="text-2xl font-bold text-gray-900">{getStudentDetails().name}</h2>
-                          <p className="text-gray-500">Student</p>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="border-b border-gray-100 pb-4">
-                        <p className="text-sm text-gray-500 mb-1">Class & Section</p>
-                        <p className="font-semibold text-gray-900 text-lg">{getStudentDetails().grade} - A</p>
+                      <form onSubmit={handleProfileUpdate}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                            <input
+                              type="text"
+                              disabled={!isEditingProfile}
+                              value={profileFormData.firstName}
+                              onChange={(e) => setProfileFormData({ ...profileFormData, firstName: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                            <input
+                              type="text"
+                              disabled={!isEditingProfile}
+                              value={profileFormData.lastName}
+                              onChange={(e) => setProfileFormData({ ...profileFormData, lastName: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input
+                              type="email"
+                              disabled={!isEditingProfile}
+                              value={profileFormData.email}
+                              onChange={(e) => setProfileFormData({ ...profileFormData, email: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input
+                              type="tel"
+                              disabled={!isEditingProfile}
+                              value={profileFormData.phone}
+                              onChange={(e) => setProfileFormData({ ...profileFormData, phone: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                            <input
+                              type="text"
+                              disabled={!isEditingProfile}
+                              value={profileFormData.address}
+                              onChange={(e) => setProfileFormData({ ...profileFormData, address: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            />
+                          </div>
+                        </div>
+
+                        {isEditingProfile && (
+                          <div className="mt-8 flex justify-end">
+                            <button
+                              type="submit"
+                              className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                            >
+                              <Save size={18} />
+                              Save Changes
+                            </button>
+                          </div>
+                        )}
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Notifications' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-3xl font-bold text-gray-900">Notifications</h2>
+                    <div className="flex gap-4">
+                      {notifications.some(n => !n.read) && (
+                        <button
+                          onClick={markAllAsRead}
+                          className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                      {notifications.length > 0 && (
+                        <button
+                          onClick={clearAllNotifications}
+                          className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-2xl shadow-sm p-6">
+                    <div className="space-y-4">
+                      {notifications.map((notification) => {
+                        let icon, styles;
+                        switch (notification.type) {
+                          case 'fee':
+                            icon = <Bell size={20} />;
+                            styles = { bg: 'bg-blue-50', border: 'border-blue-100', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' };
+                            break;
+                          case 'assignment':
+                            icon = <CheckCircle size={20} />;
+                            styles = { bg: 'bg-green-50', border: 'border-green-100', iconBg: 'bg-green-100', iconColor: 'text-green-600' };
+                            break;
+                          case 'meeting':
+                            icon = <Calendar size={20} />;
+                            styles = { bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600' };
+                            break;
+                          default:
+                            icon = <Bell size={20} />;
+                            styles = { bg: 'bg-gray-50', border: 'border-gray-100', iconBg: 'bg-gray-100', iconColor: 'text-gray-600' };
+                        }
+
+                        return (
+                          <div
+                            key={notification.id}
+                            className={`p-4 rounded-xl border flex gap-4 transition-all ${notification.read
+                              ? 'bg-white border-gray-100 opacity-60'
+                              : `${styles.bg} ${styles.border}`
+                              }`}
+                          >
+                            <div className={`p-2 rounded-full h-fit ${styles.iconBg} ${styles.iconColor}`}>
+                              {icon}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start">
+                                <h4 className={`font-bold ${notification.read ? 'text-gray-600' : 'text-gray-900'}`}>
+                                  {notification.title}
+                                </h4>
+                                <span className="text-xs text-gray-500">{notification.time}</span>
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                              {!notification.read && (
+                                <button
+                                  onClick={() => markNotificationAsRead(notification.id)}
+                                  className="text-xs font-semibold text-indigo-600 mt-2 hover:text-indigo-800"
+                                >
+                                  Mark as read
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {notifications.length === 0 && (
+                        <div className="text-center py-8 text-gray-500">
+                          No notifications available
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Student Profile' && (
+                <div className="max-w-4xl mx-auto">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="h-32 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                    <div className="px-8 pb-8">
+                      <div className="relative flex justify-between items-end -mt-12 mb-8">
+                        <div className="flex items-end gap-6">
+                          <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-md flex items-center justify-center text-3xl font-bold text-blue-600">
+                            {getStudentDetails().name.charAt(0)}
+                          </div>
+                          <div className="translate-y-2">
+                            <h2 className="text-2xl font-bold text-gray-900">{getStudentDetails().name}</h2>
+                            <p className="text-gray-500">Student</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="border-b border-gray-100 pb-4">
-                        <p className="text-sm text-gray-500 mb-1">Student ID</p>
-                        <p className="font-semibold text-gray-900 text-lg">{getStudentDetails().id}</p>
-                      </div>
-                      <div className="border-b border-gray-100 pb-4">
-                        <p className="text-sm text-gray-500 mb-1">Date of Birth</p>
-                        <p className="font-semibold text-gray-900 text-lg">12 Aug 2008</p>
-                      </div>
-                      <div className="border-b border-gray-100 pb-4">
-                        <p className="text-sm text-gray-500 mb-1">Blood Group</p>
-                        <p className="font-semibold text-gray-900 text-lg">B+</p>
-                      </div>
-                      <div className="border-b border-gray-100 pb-4">
-                        <p className="text-sm text-gray-500 mb-1">Attendance</p>
-                        <p className="font-semibold text-gray-900 text-lg">93%</p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-sm text-gray-500 mb-1">Class & Section</p>
+                          <p className="font-semibold text-gray-900 text-lg">{getStudentDetails().grade} - A</p>
+                        </div>
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-sm text-gray-500 mb-1">Student ID</p>
+                          <p className="font-semibold text-gray-900 text-lg">{getStudentDetails().id}</p>
+                        </div>
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-sm text-gray-500 mb-1">Date of Birth</p>
+                          <p className="font-semibold text-gray-900 text-lg">12 Aug 2008</p>
+                        </div>
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-sm text-gray-500 mb-1">Blood Group</p>
+                          <p className="font-semibold text-gray-900 text-lg">B+</p>
+                        </div>
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-sm text-gray-500 mb-1">Attendance</p>
+                          <p className="font-semibold text-gray-900 text-lg">93%</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
               )}
             </div>
           )}
@@ -2113,13 +2072,13 @@ const ParentDashboard = ({ onLogout }) => {
             <h3 className="text-xl font-bold text-gray-900 mb-2">Logout?</h3>
             <p className="text-gray-600 mb-6">Are you sure you want to logout from your account?</p>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setShowLogoutModal(false)}
                 className="flex-1 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmLogout}
                 className="flex-1 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
               >

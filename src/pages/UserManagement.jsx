@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, X, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { validateAuth, logout } from '../utils/auth';
 
 export default function UserManagement() {
@@ -39,7 +39,7 @@ export default function UserManagement() {
   const [formErrors, setFormErrors] = useState({});
   const [submitLoading, setSubmitLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [, setShowPassword] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
 
   // Load users from API on mount
@@ -50,6 +50,7 @@ export default function UserManagement() {
   // Filter users when search term or role filter changes
   useEffect(() => {
     filterUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, roleFilter, users]);
 
   const loadUsersFromAPI = async () => {
@@ -241,7 +242,7 @@ export default function UserManagement() {
         }, 2000);
       } else {
         if (result.error === 'Invalid token or authorization error.' ||
-            result.error === 'Unauthorized. Admin access required.') {
+          result.error === 'Unauthorized. Admin access required.') {
           alert('Your session has expired. Please login again.');
           logout();
           return;
@@ -404,9 +405,8 @@ export default function UserManagement() {
                 {filteredUsers.map((user, index) => (
                   <tr
                     key={user.id}
-                    className={`border-b border-slate-200 hover:bg-slate-50 transition ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
-                    }`}
+                    className={`border-b border-slate-200 hover:bg-slate-50 transition ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+                      }`}
                   >
                     <td className="px-6 py-4">
                       <div>
@@ -508,11 +508,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, firstName: e.target.value });
                         if (formErrors.firstName) setFormErrors({ ...formErrors, firstName: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.firstName
-                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.firstName
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
                       placeholder="First name"
                     />
                     {formErrors.firstName && <p className="text-red-600 text-sm mt-1">{formErrors.firstName}</p>}
@@ -528,11 +527,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, lastName: e.target.value });
                         if (formErrors.lastName) setFormErrors({ ...formErrors, lastName: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.lastName
-                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.lastName
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
                       placeholder="Last name"
                     />
                     {formErrors.lastName && <p className="text-red-600 text-sm mt-1">{formErrors.lastName}</p>}
@@ -548,11 +546,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, email: e.target.value });
                         if (formErrors.email) setFormErrors({ ...formErrors, email: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.email
-                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.email
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
                       placeholder="email@school.com"
                     />
                     {formErrors.email && <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>}
@@ -568,11 +565,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, phone: e.target.value });
                         if (formErrors.phone) setFormErrors({ ...formErrors, phone: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.phone
-                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.phone
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
                       placeholder="9876543210"
                     />
                     {formErrors.phone && <p className="text-red-600 text-sm mt-1">{formErrors.phone}</p>}
@@ -587,11 +583,10 @@ export default function UserManagement() {
                         setFormData({ ...formData, role: e.target.value });
                         if (formErrors.role) setFormErrors({ ...formErrors, role: '' });
                       }}
-                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                        formErrors.role
-                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                      }`}
+                      className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.role
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
                     >
                       <option value="student">Student</option>
                       <option value="parent">Parent</option>                      <option value="teacher">Teaching Staff</option>
@@ -599,7 +594,7 @@ export default function UserManagement() {
                     </select>
                     {formErrors.role && <p className="text-red-600 text-sm mt-1">{formErrors.role}</p>}
                   </div>
-                  
+
                   {/* Password (Optional) */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Password (Optional)</label>
@@ -641,11 +636,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, rollNumber: e.target.value });
                           if (formErrors.rollNumber) setFormErrors({ ...formErrors, rollNumber: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.rollNumber
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.rollNumber
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="STU001"
                       />
                       {formErrors.rollNumber && <p className="text-red-600 text-sm mt-1">{formErrors.rollNumber}</p>}
@@ -660,11 +654,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, className: e.target.value });
                           if (formErrors.className) setFormErrors({ ...formErrors, className: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.className
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.className
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="10-A"
                       />
                       {formErrors.className && <p className="text-red-600 text-sm mt-1">{formErrors.className}</p>}
@@ -686,11 +679,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, designation: e.target.value });
                           if (formErrors.designation) setFormErrors({ ...formErrors, designation: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.designation
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.designation
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="Math Teacher"
                       />
                       {formErrors.designation && <p className="text-red-600 text-sm mt-1">{formErrors.designation}</p>}
@@ -705,11 +697,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, subject: e.target.value });
                           if (formErrors.subject) setFormErrors({ ...formErrors, subject: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.subject
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.subject
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="Mathematics"
                       />
                       {formErrors.subject && <p className="text-red-600 text-sm mt-1">{formErrors.subject}</p>}
@@ -731,11 +722,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, childName: e.target.value });
                           if (formErrors.childName) setFormErrors({ ...formErrors, childName: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.childName
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.childName
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="Student name"
                       />
                       {formErrors.childName && <p className="text-red-600 text-sm mt-1">{formErrors.childName}</p>}
@@ -749,11 +739,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, relationship: e.target.value });
                           if (formErrors.relationship) setFormErrors({ ...formErrors, relationship: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.relationship
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.relationship
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                       >
                         <option value="">Select relationship</option>
                         <option value="Mother">Mother</option>
@@ -772,11 +761,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, className: e.target.value });
                           if (formErrors.className) setFormErrors({ ...formErrors, className: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.className
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.className
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="10-A"
                       />
                       {formErrors.className && <p className="text-red-600 text-sm mt-1">{formErrors.className}</p>}
@@ -798,11 +786,10 @@ export default function UserManagement() {
                           setFormData({ ...formData, designation: e.target.value });
                           if (formErrors.designation) setFormErrors({ ...formErrors, designation: '' });
                         }}
-                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${
-                          formErrors.designation
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
-                        }`}
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl focus:outline-none focus:ring-2 transition ${formErrors.designation
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
                         placeholder="Librarian, Accountant, etc."
                       />
                       {formErrors.designation && <p className="text-red-600 text-sm mt-1">{formErrors.designation}</p>}

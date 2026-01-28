@@ -1,30 +1,33 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './pages/HomePage';
-import SignUpPage from './pages/SignUpPage';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import ChangePasswordPage from './pages/ChangePasswordPage';
-import StudentDashboard from './pages/StudentDashboard';
-import ParentDashboard from './pages/ParentDashboard';
-import TeacherDashboard from './pages/TeacherDashboard';
-import UserManagement from './pages/UserManagement';
-import ModernAdminDashboard from './pages/ModernAdminDashboard';
-import StudentsPage from './pages/StudentsPage';
-import TeachersPage from './pages/TeachersPage';
-import ParentsPage from './pages/ParentsPage';
-import NotificationsPage from './pages/NotificationsPage';
-import AttendancePage from './pages/AttendancePage';
-import FinancePage from './pages/FinancePage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import MaintenancePage from './pages/MaintenancePage';
-import DriversPage from './pages/DriversPage';
-import CalendarPage from './pages/CalendarPage';
-import Settings from './pages/Settings';
-import AdminProfilePage from './pages/AdminProfilePage';
-import { logout } from './utils/auth';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
+import HomePage from "./pages/HomePage";
+import SignUpPage from "./pages/SignUpPage";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+
+import StudentDashboard from "./pages/StudentDashboard";
+import ParentDashboard from "./pages/ParentDashboard";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import ModernAdminDashboard from "./pages/ModernAdminDashboard";
+
+import UserManagement from "./pages/UserManagement";
+import StudentsPage from "./pages/StudentsPage";
+import TeachersPage from "./pages/TeachersPage";
+import ParentsPage from "./pages/ParentsPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import AttendancePage from "./pages/AttendancePage";
+import FinancePage from "./pages/FinancePage";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import MaintenancePage from "./pages/MaintenancePage";
+import DriversPage from "./pages/DriversPage";
+import CalendarPage from "./pages/CalendarPage";
+import Settings from "./pages/Settings";
+import AdminProfilePage from "./pages/AdminProfilePage";
+
+import { logout } from "./utils/auth";
 
 function App() {
   const handleLogout = () => {
@@ -34,16 +37,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Home Page - Landing */}
-        <Route path="/" element={<HomePage />} />
-        
-        {/* Public Routes */}
+        {/* 🔓 PUBLIC ROUTES */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<HomePage />} />
+        <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        
-        {/* Protected Routes */}
+
+        {/* 🔐 PROTECTED ROUTES */}
+
+        {/* Admin */}
         <Route
           path="/admin"
           element={
@@ -52,35 +56,11 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route 
-          path="/student" 
-          element={
-            <ProtectedRoute requiredRole="student">
-              <StudentDashboard onLogout={handleLogout} />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/parent" 
-          element={
-            <ProtectedRoute requiredRole="parent">
-              <ParentDashboard onLogout={handleLogout} />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/teacher" 
-          element={
-            <ProtectedRoute requiredRole="staff">
-              <TeacherDashboard onLogout={handleLogout} />
-            </ProtectedRoute>
-          } 
-        />
         <Route
-          path="/user-management"
+          path="/admin/profile"
           element={
             <ProtectedRoute requiredRole="admin">
-              <UserManagement onLogout={handleLogout} />
+              <AdminProfilePage onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
@@ -97,6 +77,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <TeachersPage onLogout={handleLogout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/parents"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <ParentsPage onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
@@ -149,14 +137,6 @@ function App() {
           }
         />
         <Route
-          path="/admin/parents"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <ParentsPage onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/admin/settings"
           element={
             <ProtectedRoute requiredRole="admin">
@@ -172,15 +152,39 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Student */}
         <Route
-          path="/admin/profile"
+          path="/student"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminProfilePage onLogout={handleLogout} />
+            <ProtectedRoute requiredRole="student">
+              <StudentDashboard onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
 
+        {/* Parent */}
+        <Route
+          path="/parent"
+          element={
+            <ProtectedRoute requiredRole="parent">
+              <ParentDashboard onLogout={handleLogout} />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Teacher */}
+        <Route
+          path="/teacher"
+          element={
+            <ProtectedRoute requiredRole="teacher">
+              <TeacherDashboard onLogout={handleLogout} />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

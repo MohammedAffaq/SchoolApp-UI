@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   Menu,
@@ -67,7 +66,7 @@ const AdminProfilePage = ({ onLogout }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
-  
+
   const [profileData, setProfileData] = useState({
     firstName: 'Admin',
     lastName: 'User',
@@ -177,15 +176,15 @@ const AdminProfilePage = ({ onLogout }) => {
   const toggleNotifications = () => {
     const newStatus = !profileData.notifications;
     setProfileData(prev => ({ ...prev, notifications: newStatus }));
-    
+
     try {
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-        if (registeredUsers.admin) {
-            registeredUsers.admin.notifications = newStatus;
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-        }
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+      if (registeredUsers.admin) {
+        registeredUsers.admin.notifications = newStatus;
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      }
     } catch (e) {
-        console.error("Failed to save notification preference:", e);
+      console.error("Failed to save notification preference:", e);
     }
   };
 
@@ -272,29 +271,29 @@ const AdminProfilePage = ({ onLogout }) => {
     const img = new Image();
     img.src = tempImage;
     img.onload = () => {
-        const imgWidth = img.naturalWidth * cropScale;
-        const imgHeight = img.naturalHeight * cropScale;
-        const dx = (size - imgWidth) / 2 + cropPosition.x;
-        const dy = (size - imgHeight) / 2 + cropPosition.y;
+      const imgWidth = img.naturalWidth * cropScale;
+      const imgHeight = img.naturalHeight * cropScale;
+      const dx = (size - imgWidth) / 2 + cropPosition.x;
+      const dy = (size - imgHeight) / 2 + cropPosition.y;
 
-        ctx.drawImage(img, dx, dy, imgWidth, imgHeight);
-        
-        const base64String = canvas.toDataURL('image/png');
-        
-        setProfileImage(base64String);
-        setSuccessMessage('Profile picture updated successfully!');
-        setTimeout(() => setSuccessMessage(''), 5000);
-        setShowCropModal(false);
+      ctx.drawImage(img, dx, dy, imgWidth, imgHeight);
 
-        try {
-          const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-          if (registeredUsers.admin) {
-            registeredUsers.admin.profileImage = base64String;
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-          }
-        } catch (e) {
-          console.error("Failed to save profile image:", e);
+      const base64String = canvas.toDataURL('image/png');
+
+      setProfileImage(base64String);
+      setSuccessMessage('Profile picture updated successfully!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+      setShowCropModal(false);
+
+      try {
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+        if (registeredUsers.admin) {
+          registeredUsers.admin.profileImage = base64String;
+          localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
         }
+      } catch (e) {
+        console.error("Failed to save profile image:", e);
+      }
     };
   };
 
@@ -348,7 +347,7 @@ const AdminProfilePage = ({ onLogout }) => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -412,9 +411,9 @@ const AdminProfilePage = ({ onLogout }) => {
                 <div className="relative flex justify-between items-end -mt-16 mb-8">
                   <div className="flex items-end gap-6 relative">
                     <div className="relative group">
-                      <img 
+                      <img
                         src={profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(adminName)}&background=c7d2fe&color=3730a3&size=128`}
-                        alt="Profile" 
+                        alt="Profile"
                         className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white object-cover"
                       />
                       <div className="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -424,7 +423,7 @@ const AdminProfilePage = ({ onLogout }) => {
                         <Camera size={16} />
                       </button>
                       {profileImage && (
-                        <button 
+                        <button
                           onClick={handleRemoveImage}
                           className="absolute top-0 right-0 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-sm border-2 border-white z-20"
                           title="Remove photo"
@@ -447,28 +446,27 @@ const AdminProfilePage = ({ onLogout }) => {
                   </div>
                   <div className="flex gap-3">
                     <button
-                        onClick={() => setShowPasswordModal(true)}
-                        className="px-4 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm"
+                      onClick={() => setShowPasswordModal(true)}
+                      className="px-4 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm"
                     >
-                        <Lock size={18} />
-                        Change Password
+                      <Lock size={18} />
+                      Change Password
                     </button>
-                    <button 
-                        onClick={() => setIsEditing(!isEditing)}
-                        className={`px-6 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 ${
-                        isEditing 
-                            ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className={`px-6 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 ${isEditing
+                          ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
                         }`}
                     >
-                        {isEditing ? (
+                      {isEditing ? (
                         <>Cancel</>
-                        ) : (
+                      ) : (
                         <>
-                            <Edit2 size={18} />
-                            Edit Profile
+                          <Edit2 size={18} />
+                          Edit Profile
                         </>
-                        )}
+                      )}
                     </button>
                   </div>
                 </div>
@@ -519,14 +517,12 @@ const AdminProfilePage = ({ onLogout }) => {
                         <span className="text-sm text-gray-600">Email Alerts</span>
                         <button
                           onClick={toggleNotifications}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                            profileData.notifications ? 'bg-indigo-600' : 'bg-gray-200'
-                          }`}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${profileData.notifications ? 'bg-indigo-600' : 'bg-gray-200'
+                            }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              profileData.notifications ? 'translate-x-6' : 'translate-x-1'
-                            }`}
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${profileData.notifications ? 'translate-x-6' : 'translate-x-1'
+                              }`}
                           />
                         </button>
                       </div>
@@ -557,7 +553,7 @@ const AdminProfilePage = ({ onLogout }) => {
                             type="text"
                             disabled={!isEditing}
                             value={profileData.firstName}
-                            onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                            onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
@@ -567,7 +563,7 @@ const AdminProfilePage = ({ onLogout }) => {
                             type="text"
                             disabled={!isEditing}
                             value={profileData.lastName}
-                            onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                            onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
@@ -577,7 +573,7 @@ const AdminProfilePage = ({ onLogout }) => {
                             rows="4"
                             disabled={!isEditing}
                             value={profileData.bio}
-                            onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                            onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500 resize-none"
                           />
                         </div>
@@ -587,7 +583,7 @@ const AdminProfilePage = ({ onLogout }) => {
                             type="email"
                             disabled={!isEditing}
                             value={profileData.email}
-                            onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
@@ -597,7 +593,7 @@ const AdminProfilePage = ({ onLogout }) => {
                             type="tel"
                             disabled={!isEditing}
                             value={profileData.phone}
-                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
@@ -605,7 +601,7 @@ const AdminProfilePage = ({ onLogout }) => {
 
                       {isEditing && (
                         <div className="mt-8 flex justify-end">
-                          <button 
+                          <button
                             onClick={handleSave}
                             className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-lg shadow-indigo-200"
                           >
@@ -633,7 +629,7 @@ const AdminProfilePage = ({ onLogout }) => {
                 <X size={24} />
               </button>
             </div>
-            
+
             <form onSubmit={handlePasswordSave} className="p-6 space-y-4">
               {passwordError && (
                 <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
@@ -647,7 +643,7 @@ const AdminProfilePage = ({ onLogout }) => {
                   {passwordSuccess}
                 </div>
               )}
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
                 <input
@@ -655,7 +651,7 @@ const AdminProfilePage = ({ onLogout }) => {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                 />
               </div>
               <div>
@@ -665,7 +661,7 @@ const AdminProfilePage = ({ onLogout }) => {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                 />
               </div>
               <div>
@@ -675,7 +671,7 @@ const AdminProfilePage = ({ onLogout }) => {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                 />
               </div>
 
@@ -701,7 +697,7 @@ const AdminProfilePage = ({ onLogout }) => {
 
       {/* Crop Modal */}
       {showCropModal && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -714,11 +710,11 @@ const AdminProfilePage = ({ onLogout }) => {
                 <X size={24} />
               </button>
             </div>
-            
+
             <div className="p-6 flex flex-col items-center">
               <div className="relative w-[250px] h-[250px] rounded-full overflow-hidden border-4 border-indigo-100 bg-gray-50 cursor-move mb-6 flex items-center justify-center">
-                <img 
-                  src={tempImage} 
+                <img
+                  src={tempImage}
                   alt="Crop preview"
                   className="max-w-none"
                   style={{ transform: `translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropScale})`, pointerEvents: 'auto' }}
@@ -726,10 +722,10 @@ const AdminProfilePage = ({ onLogout }) => {
                   draggable={false}
                 />
               </div>
-              
+
               <div className="w-full px-4 flex items-center gap-4">
                 <span className="text-xs font-medium text-gray-500">Zoom</span>
-                <input 
+                <input
                   type="range" min="0.5" max="3" step="0.1" value={cropScale}
                   onChange={(e) => setCropScale(parseFloat(e.target.value))}
                   className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"

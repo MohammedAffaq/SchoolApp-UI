@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, CheckCircle, ArrowLeft, Shield, GraduationCap, Users, Briefcase, Plus, X } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Shield } from 'lucide-react';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
 
-  const [role] = useState('admin');
-  const [showPassword, setShowPassword] = useState(false);
+
 
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [errors, setErrors] = useState({});
@@ -42,14 +41,14 @@ export default function SignUpPage() {
     const pwd = e.target.value;
     setFormData({ ...formData, password: pwd });
     setPasswordStrength(calculatePasswordStrength(pwd));
-    
+
     // Real-time validation for password
     if (touched.password) {
-        const newErrors = { ...errors };
-        if (!pwd) newErrors.password = 'Password is required';
-        else if (pwd.length < 8) newErrors.password = 'Password must be at least 8 characters';
-        else delete newErrors.password;
-        setErrors(newErrors);
+      const newErrors = { ...errors };
+      if (!pwd) newErrors.password = 'Password is required';
+      else if (pwd.length < 8) newErrors.password = 'Password must be at least 8 characters';
+      else delete newErrors.password;
+      setErrors(newErrors);
     }
   };
 
@@ -89,36 +88,36 @@ export default function SignUpPage() {
   };
 
   const validateField = (name, value) => {
-      const newErrors = { ...errors };
+    const newErrors = { ...errors };
 
-      switch (name) {
-          case 'firstName':
-              if (!value.trim()) newErrors.firstName = 'First name is required';
-              else delete newErrors.firstName;
-              break;
-          case 'lastName':
-              if (!value.trim()) newErrors.lastName = 'Last name is required';
-              else delete newErrors.lastName;
-              break;
-          case 'email':
-              if (!value.trim()) newErrors.email = 'Email is required';
-              else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) newErrors.email = 'Email is invalid';
-              else delete newErrors.email;
-              break;
-          case 'phone':
-              if (!value.trim()) newErrors.phone = 'Phone is required';
-              else if (!/^\d{10}$/.test(value.replace(/\D/g, ''))) newErrors.phone = 'Phone must be 10 digits';
-              else delete newErrors.phone;
-              break;
-          case 'confirmPassword':
-              if (!value) newErrors.confirmPassword = 'Please confirm your password';
-              else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
-              else delete newErrors.confirmPassword;
-              break;
-          default:
-              break;
-      }
-      setErrors(newErrors);
+    switch (name) {
+      case 'firstName':
+        if (!value.trim()) newErrors.firstName = 'First name is required';
+        else delete newErrors.firstName;
+        break;
+      case 'lastName':
+        if (!value.trim()) newErrors.lastName = 'Last name is required';
+        else delete newErrors.lastName;
+        break;
+      case 'email':
+        if (!value.trim()) newErrors.email = 'Email is required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) newErrors.email = 'Email is invalid';
+        else delete newErrors.email;
+        break;
+      case 'phone':
+        if (!value.trim()) newErrors.phone = 'Phone is required';
+        else if (!/^\d{10}$/.test(value.replace(/\D/g, ''))) newErrors.phone = 'Phone must be 10 digits';
+        else delete newErrors.phone;
+        break;
+      case 'confirmPassword':
+        if (!value) newErrors.confirmPassword = 'Please confirm your password';
+        else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
+        else delete newErrors.confirmPassword;
+        break;
+      default:
+        break;
+    }
+    setErrors(newErrors);
   };
 
   const handleSubmit = (e) => {
@@ -220,14 +219,13 @@ export default function SignUpPage() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={(e) => {
-                        setFormData({ ...formData, firstName: e.target.value });
-                        if (touched.firstName) validateField('firstName', e.target.value);
+                      setFormData({ ...formData, firstName: e.target.value });
+                      if (touched.firstName) validateField('firstName', e.target.value);
                     }}
                     onBlur={handleBlur}
                     placeholder="John"
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.firstName ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                 </div>
@@ -240,14 +238,13 @@ export default function SignUpPage() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={(e) => {
-                        setFormData({ ...formData, lastName: e.target.value });
-                        if (touched.lastName) validateField('lastName', e.target.value);
+                      setFormData({ ...formData, lastName: e.target.value });
+                      if (touched.lastName) validateField('lastName', e.target.value);
                     }}
                     onBlur={handleBlur}
                     placeholder="Doe"
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.lastName ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                 </div>
@@ -260,14 +257,13 @@ export default function SignUpPage() {
                     name="email"
                     value={formData.email}
                     onChange={(e) => {
-                        setFormData({ ...formData, email: e.target.value });
-                        if (touched.email) validateField('email', e.target.value);
+                      setFormData({ ...formData, email: e.target.value });
+                      if (touched.email) validateField('email', e.target.value);
                     }}
                     onBlur={handleBlur}
                     placeholder="john@example.com"
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
@@ -280,14 +276,13 @@ export default function SignUpPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={(e) => {
-                        setFormData({ ...formData, phone: e.target.value });
-                        if (touched.phone) validateField('phone', e.target.value);
+                      setFormData({ ...formData, phone: e.target.value });
+                      if (touched.phone) validateField('phone', e.target.value);
                     }}
                     onBlur={handleBlur}
                     placeholder="9876543210"
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.phone ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
@@ -308,9 +303,8 @@ export default function SignUpPage() {
                     onChange={handlePasswordChange}
                     onBlur={handleBlur}
                     placeholder="Leave empty to auto-generate"
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.password ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                   <p className="text-xs text-gray-500 mt-1">Leave blank to auto-generate a secure password</p>
@@ -346,17 +340,15 @@ export default function SignUpPage() {
                       <div className="mt-3">
                         <div className="flex justify-between mb-1">
                           <span className="text-xs font-medium text-gray-600">Password Strength</span>
-                          <span className={`text-xs font-semibold ${
-                            passwordStrength < 60 ? 'text-red-500' : passwordStrength < 80 ? 'text-yellow-500' : 'text-green-500'
-                          }`}>
+                          <span className={`text-xs font-semibold ${passwordStrength < 60 ? 'text-red-500' : passwordStrength < 80 ? 'text-yellow-500' : 'text-green-500'
+                            }`}>
                             {passwordStrength < 60 ? 'Weak' : passwordStrength < 80 ? 'Good' : 'Strong'}
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className={`h-2 rounded-full transition-all ${
-                              passwordStrength < 60 ? 'bg-red-500' : passwordStrength < 80 ? 'bg-yellow-500' : 'bg-green-500'
-                            }`}
+                            className={`h-2 rounded-full transition-all ${passwordStrength < 60 ? 'bg-red-500' : passwordStrength < 80 ? 'bg-yellow-500' : 'bg-green-500'
+                              }`}
                             style={{ width: `${passwordStrength}%` }}
                           ></div>
                         </div>
@@ -386,11 +378,10 @@ export default function SignUpPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all ${
-                  loading
+                className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all ${loading
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-blue-600 to-teal-600 hover:shadow-lg transform hover:scale-105'
-                }`}
+                  }`}
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>

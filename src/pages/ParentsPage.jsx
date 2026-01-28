@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -209,9 +209,9 @@ const ParentsPage = ({ onLogout }) => {
 
   const filteredParents = parents.filter(parent => {
     const matchesSearch = parent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    parent.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    parent.childName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    parent.email.toLowerCase().includes(searchTerm.toLowerCase());
+      parent.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      parent.childName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      parent.email.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -370,7 +370,7 @@ const ParentsPage = ({ onLogout }) => {
         setNewParent({ firstName: '', lastName: '', email: '', phone: '', children: [{ name: '', grade: '' }], relationship: 'Parent' });
       } else {
         if (result.error === 'Invalid token or authorization error.' ||
-            result.error === 'Unauthorized. Admin access required.') {
+          result.error === 'Unauthorized. Admin access required.') {
           alert('Your session has expired. Please login again.');
           logout();
           return;
@@ -737,7 +737,7 @@ const ParentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newParent.firstName}
-                    onChange={(e) => setNewParent({...newParent, firstName: e.target.value})}
+                    onChange={(e) => setNewParent({ ...newParent, firstName: e.target.value })}
                     placeholder="John"
                   />
                 </div>
@@ -748,7 +748,7 @@ const ParentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newParent.lastName}
-                    onChange={(e) => setNewParent({...newParent, lastName: e.target.value})}
+                    onChange={(e) => setNewParent({ ...newParent, lastName: e.target.value })}
                     placeholder="Doe"
                   />
                 </div>
@@ -761,7 +761,7 @@ const ParentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newParent.email}
-                    onChange={(e) => setNewParent({...newParent, email: e.target.value})}
+                    onChange={(e) => setNewParent({ ...newParent, email: e.target.value })}
                     placeholder="john@example.com"
                   />
                 </div>
@@ -772,7 +772,7 @@ const ParentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newParent.phone}
-                    onChange={(e) => setNewParent({...newParent, phone: e.target.value})}
+                    onChange={(e) => setNewParent({ ...newParent, phone: e.target.value })}
                     placeholder="9876543210"
                   />
                 </div>
@@ -844,7 +844,7 @@ const ParentsPage = ({ onLogout }) => {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                     value={newParent.relationship}
-                    onChange={(e) => setNewParent({...newParent, relationship: e.target.value})}
+                    onChange={(e) => setNewParent({ ...newParent, relationship: e.target.value })}
                   >
                     <option value="Parent">Parent</option>
                     <option value="Father">Father</option>
@@ -876,7 +876,7 @@ const ParentsPage = ({ onLogout }) => {
               <p className="text-gray-600 mb-4">
                 Credentials have been generated.
               </p>
-              
+
               <div className="w-full bg-gray-50 rounded-xl p-4 text-left space-y-3 border border-gray-100">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Login ID</p>

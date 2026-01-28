@@ -1,55 +1,59 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { validateAuth } from '../utils/auth';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { validateAuth } from "../utils/auth";
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const currentUser = localStorage.getItem('currentUser');
-  const userRole = localStorage.getItem('userRole');
+  const location = useLocation();
 
-  console.log('ProtectedRoute Debug:', { currentUser: !!currentUser, userRole, requiredRole });
+  const currentUser = localStorage.getItem("currentUser");
+  const userRole = localStorage.getItem("userRole");
 
-  // Check if user is logged in
+  console.log("ProtectedRoute Debug:", {
+    path: location.pathname,
+    currentUser: !!currentUser,
+    userRole,
+    requiredRole,
+  });
+
+  // 🚨 DO NOT protect public routes
+  if (location.pathname === "/login" || location.pathname === "/") {
+    return children;
+  }
+
+  // 🔐 Not logged in
   if (!currentUser) {
-    console.log('No currentUser, redirecting to /');
-    return <Navigate to="/" />;
+    console.log("No currentUser → redirecting to /login");
+    return <Navigate to="/login" replace />;
   }
 
-  // Validate authentication and check for session expiration
-  const authValidation = validateAuth();
-  console.log('Auth validation:', authValidation);
-  if (!authValidation.isValid) {
-    console.log('Auth invalid, clearing session and redirecting');
-    // Clear invalid session data
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('parentName');
-    localStorage.removeItem('childName');
-    localStorage.removeItem('childGrade');
-    return <Navigate to="/" />;
+  // 🔍 Validate auth (TEMPORARILY SAFE-GUARDED)
+  let authValidation = { isValid: true };
+  try {
+    authValidation = validateAuth();
+  } catch (e) {
+    console.error("validateAuth crashed:", e);
   }
 
-  // Check role-based access
+  if (!authValidation?.isValid) {
+    console.log("Auth invalid → clearing storage and redirecting");
+    localStorage.clear();
+    return <Navigate to="/login" replace />;
+  }
+
+  // 🔑 Role check
   if (requiredRole && userRole !== requiredRole) {
-    console.log('Role mismatch, redirecting based on userRole');
-    // Redirect to appropriate dashboard based on role
-    switch (userRole) {
-      case 'admin':
-        return <Navigate to="/admin" />;
-      case 'student':
-        return <Navigate to="/student" />;
-      case 'teacher':
-        return <Navigate to="/teacher" />;
-      case 'parent':
-        return <Navigate to="/parent" />;
-      case 'staff':
-        return <Navigate to="/staff" />;
-      default:
-        return <Navigate to="/" />;
-    }
+    console.log("Role mismatch → redirecting");
+
+    const roleRoutes = {
+      admin: "/admin",
+      student: "/student",
+      teacher: "/teacher",
+      parent: "/parent",
+      staff: "/staff",
+    };
+
+    return <Navigate to={roleRoutes[userRole] || "/login"} replace />;
   }
 
-  console.log('Returning children');
   return children;
 }

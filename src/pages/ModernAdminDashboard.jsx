@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -7,7 +7,6 @@ import {
   Bus,
   DollarSign,
   CalendarCheck,
-  Wrench,
   LogOut,
   Bell,
   Menu,
@@ -187,7 +186,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
       isOpen: true,
       type,
       requestId: request.id,
-      studentName: request.type === 'add' 
+      studentName: request.type === 'add'
         ? `${request.studentData.firstName} ${request.studentData.lastName}`
         : `Student ID: ${request.studentData.studentId}`
     });
@@ -433,321 +432,321 @@ const ModernAdminDashboard = ({ onLogout }) => {
           <div className="max-w-7xl mx-auto space-y-8">
             {activeView === 'dashboard' && (
               <>
-            {/* Welcome Section */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900">Welcome back, {adminName}!</h2>
-              <div className="flex flex-wrap gap-4 mt-6">
-                <button
-                  onClick={() => navigate('/admin/analytics')}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  View Reports
-                </button>
-                <button
-                  onClick={() => setShowRegisterModal(true)}
-                  className="bg-indigo-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
-                >
-                  Register User
-                </button>
-              </div>
-            </div>
-
-            {/* KPI Cards Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <KPICard
-                icon={<GraduationCap className="text-blue-600" />}
-                label="Total Teachers"
-                value="145"
-                trend="+4%"
-              />
-              <KPICard
-                icon={<Users className="text-cyan-600" />}
-                label="Total Students"
-                value="2,540"
-                trend="+12%"
-              />
-              <KPICard
-                icon={<Bus className="text-orange-600" />}
-                label="Vehicles / Drivers"
-                value="28"
-                trend="Stable"
-              />
-              <KPICard
-                icon={<DollarSign className="text-emerald-600" />}
-                label="Revenue"
-                value="$1.2M"
-                trend="+8.5%"
-              />
-            </div>
-
-            {/* Below KPI Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Live Attendance Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Live Attendance</h3>
-                <div className="space-y-4">
-                  <AttendanceItem classLabel="Class 10-A" percentage={92} />
-                  <AttendanceItem classLabel="Class 9-B" percentage={85} />
-                  <AttendanceItem classLabel="Class 11-C" percentage={78} />
-                  <AttendanceItem classLabel="Class 8-A" percentage={96} />
-                </div>
-              </div>
-
-              {/* Teachers Summary Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Teachers Summary</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">On Duty</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">142</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">On Leave</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">8</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Absent</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">3</span>
-                  </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Total Staff</span>
-                      <span className="text-lg font-bold text-gray-900">153</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Student Performance Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Student Performance</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Excellent (90-100%)</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">1,245</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Good (80-89%)</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">892</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Average (70-79%)</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">456</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Needs Improvement</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">123</span>
-                  </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Total Students</span>
-                      <span className="text-lg font-bold text-gray-900">2,716</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Second Row - Drivers/Transport and Notice Board */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Drivers/Transport Summary Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Drivers & Transport</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Active Routes</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">24</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Vehicles Available</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">28</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Maintenance Due</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">4</span>
-                  </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Total Drivers</span>
-                      <span className="text-lg font-bold text-gray-900">32</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Notice Board Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Notice Board</h3>
-                <div className="space-y-4">
-                  <NoticeItem title="Mid-term exams schedule released" desc="Check the portal for detailed timetable." priority="high" />
-                  <NoticeItem title="School closed for Columbus Day" desc="Classes will resume on Tuesday." priority="medium" />
-                  <NoticeItem title="Annual Sports Day Registration" desc="Last date to register is Friday." priority="low" />
-                  <div className="mt-4 flex flex-wrap gap-4 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="text-gray-600">High Priority</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-gray-600">Medium Priority</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">Low Priority</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Third Row - Monthly Calendar */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Monthly Calendar Widget */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900">Monthly Calendar</h3>
-                  <div className="flex items-center gap-2">
-                    <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                      <ChevronLeft size={20} className="text-gray-600" />
+                {/* Welcome Section */}
+                <div className="bg-white rounded-2xl p-8 shadow-sm">
+                  <h2 className="text-2xl font-bold text-gray-900">Welcome back, {adminName}!</h2>
+                  <div className="flex flex-wrap gap-4 mt-6">
+                    <button
+                      onClick={() => navigate('/admin/analytics')}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                    >
+                      View Reports
                     </button>
-                    <span className="text-lg font-semibold text-gray-900 w-32 text-center">{months[calendarDate.getMonth()]} {calendarDate.getFullYear()}</span>
-                    <button onClick={handleNextMonth} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                      <ChevronRight size={20} className="text-gray-600" />
+                    <button
+                      onClick={() => setShowRegisterModal(true)}
+                      className="bg-indigo-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
+                    >
+                      Register User
                     </button>
                   </div>
                 </div>
-                <div className="grid grid-cols-7 gap-1 mb-4">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="p-2 text-center text-sm font-semibold text-gray-600">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-7 gap-1">
-                  {/* Empty cells for days before start of month */}
-                  {Array.from({ length: getFirstDayOfMonth(calendarDate) }).map((_, i) => (
-                    <div key={`empty-${i}`} className="p-2"></div>
-                  ))}
-                  
-                  {/* Days of the month */}
-                  {Array.from({ length: getDaysInMonth(calendarDate) }, (_, i) => {
-                    const day = i + 1;
-                    const events = getEventsForDay(day, calendarDate.getMonth(), calendarDate.getFullYear());
-                    const isToday = new Date().toDateString() === new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day).toDateString();
-                    
-                    let bgClass = 'hover:bg-gray-50 text-gray-700';
-                    if (isToday) bgClass = 'bg-indigo-100 text-indigo-700 font-bold border border-indigo-200';
-                    else if (events.some(e => e.type === 'holiday')) bgClass = 'bg-red-50 text-red-700 font-medium';
-                    else if (events.some(e => e.type === 'exam')) bgClass = 'bg-blue-50 text-blue-700 font-medium';
-                    else if (events.some(e => e.type === 'meeting')) bgClass = 'bg-green-50 text-green-700 font-medium';
 
-                    return (
-                      <div
-                        key={day}
-                        className={`p-2 h-10 flex items-center justify-center text-sm rounded-lg transition-colors cursor-pointer relative group ${bgClass}`}
-                      >
-                        {day}
-                        {events.length > 0 && (
-                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-current opacity-50"></div>
-                        )}
-                        {events.length > 0 && (
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10 w-max max-w-[150px] bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
-                            {events.map((e, idx) => <div key={idx}>{e.title}</div>)}
-                          </div>
-                        )}
+                {/* KPI Cards Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <KPICard
+                    icon={<GraduationCap className="text-blue-600" />}
+                    label="Total Teachers"
+                    value="145"
+                    trend="+4%"
+                  />
+                  <KPICard
+                    icon={<Users className="text-cyan-600" />}
+                    label="Total Students"
+                    value="2,540"
+                    trend="+12%"
+                  />
+                  <KPICard
+                    icon={<Bus className="text-orange-600" />}
+                    label="Vehicles / Drivers"
+                    value="28"
+                    trend="Stable"
+                  />
+                  <KPICard
+                    icon={<DollarSign className="text-emerald-600" />}
+                    label="Revenue"
+                    value="$1.2M"
+                    trend="+8.5%"
+                  />
+                </div>
+
+                {/* Below KPI Cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Live Attendance Card */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Live Attendance</h3>
+                    <div className="space-y-4">
+                      <AttendanceItem classLabel="Class 10-A" percentage={92} />
+                      <AttendanceItem classLabel="Class 9-B" percentage={85} />
+                      <AttendanceItem classLabel="Class 11-C" percentage={78} />
+                      <AttendanceItem classLabel="Class 8-A" percentage={96} />
+                    </div>
+                  </div>
+
+                  {/* Teachers Summary Card */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Teachers Summary</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">On Duty</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">142</span>
                       </div>
-                    );
-                  })}
-                </div>
-                <div className="mt-4 flex flex-wrap gap-4 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-gray-600">Exams</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">On Leave</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">8</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Absent</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">3</span>
+                      </div>
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">Total Staff</span>
+                          <span className="text-lg font-bold text-gray-900">153</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-600">Meetings</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-gray-600">Holidays</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Quick Stats Summary */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Today's Attendance</span>
-                    <span className="text-lg font-bold text-green-600">94.2%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Active Classes</span>
-                    <span className="text-lg font-bold text-blue-600">28</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Pending Tasks</span>
-                    <span className="text-lg font-bold text-orange-600">12</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">System Health</span>
-                    <span className="text-lg font-bold text-green-600">98%</span>
+                  {/* Student Performance Card */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Student Performance</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Excellent (90-100%)</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">1,245</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Good (80-89%)</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">892</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Average (70-79%)</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">456</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Needs Improvement</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">123</span>
+                      </div>
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">Total Students</span>
+                          <span className="text-lg font-bold text-gray-900">2,716</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Recent Activity Section */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
-                {recentActivities.length > 0 && (
-                  <button onClick={clearActivities} className="text-sm text-red-500 hover:text-red-700 font-medium">Clear All</button>
-                )}
-              </div>
-              <div className="space-y-4 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                {recentActivities.length > 0 ? (
-                  recentActivities.map(activity => (
-                    <EventItem key={activity.id} title={activity.title} time={activity.time} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-sm text-center py-4">No recent activity.</p>
-                )}
-              </div>
-            </div>
-            </>
+                {/* Second Row - Drivers/Transport and Notice Board */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Drivers/Transport Summary Card */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Drivers & Transport</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Active Routes</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">24</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Vehicles Available</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">28</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">Maintenance Due</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">4</span>
+                      </div>
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">Total Drivers</span>
+                          <span className="text-lg font-bold text-gray-900">32</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Notice Board Card */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Notice Board</h3>
+                    <div className="space-y-4">
+                      <NoticeItem title="Mid-term exams schedule released" desc="Check the portal for detailed timetable." priority="high" />
+                      <NoticeItem title="School closed for Columbus Day" desc="Classes will resume on Tuesday." priority="medium" />
+                      <NoticeItem title="Annual Sports Day Registration" desc="Last date to register is Friday." priority="low" />
+                      <div className="mt-4 flex flex-wrap gap-4 text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <span className="text-gray-600">High Priority</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span className="text-gray-600">Medium Priority</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-gray-600">Low Priority</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Third Row - Monthly Calendar */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Monthly Calendar Widget */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold text-gray-900">Monthly Calendar</h3>
+                      <div className="flex items-center gap-2">
+                        <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                          <ChevronLeft size={20} className="text-gray-600" />
+                        </button>
+                        <span className="text-lg font-semibold text-gray-900 w-32 text-center">{months[calendarDate.getMonth()]} {calendarDate.getFullYear()}</span>
+                        <button onClick={handleNextMonth} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                          <ChevronRight size={20} className="text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 mb-4">
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                        <div key={day} className="p-2 text-center text-sm font-semibold text-gray-600">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">
+                      {/* Empty cells for days before start of month */}
+                      {Array.from({ length: getFirstDayOfMonth(calendarDate) }).map((_, i) => (
+                        <div key={`empty-${i}`} className="p-2"></div>
+                      ))}
+
+                      {/* Days of the month */}
+                      {Array.from({ length: getDaysInMonth(calendarDate) }, (_, i) => {
+                        const day = i + 1;
+                        const events = getEventsForDay(day, calendarDate.getMonth(), calendarDate.getFullYear());
+                        const isToday = new Date().toDateString() === new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day).toDateString();
+
+                        let bgClass = 'hover:bg-gray-50 text-gray-700';
+                        if (isToday) bgClass = 'bg-indigo-100 text-indigo-700 font-bold border border-indigo-200';
+                        else if (events.some(e => e.type === 'holiday')) bgClass = 'bg-red-50 text-red-700 font-medium';
+                        else if (events.some(e => e.type === 'exam')) bgClass = 'bg-blue-50 text-blue-700 font-medium';
+                        else if (events.some(e => e.type === 'meeting')) bgClass = 'bg-green-50 text-green-700 font-medium';
+
+                        return (
+                          <div
+                            key={day}
+                            className={`p-2 h-10 flex items-center justify-center text-sm rounded-lg transition-colors cursor-pointer relative group ${bgClass}`}
+                          >
+                            {day}
+                            {events.length > 0 && (
+                              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-current opacity-50"></div>
+                            )}
+                            {events.length > 0 && (
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10 w-max max-w-[150px] bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
+                                {events.map((e, idx) => <div key={idx}>{e.title}</div>)}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-4 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-600">Exams</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-gray-600">Meetings</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span className="text-gray-600">Holidays</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats Summary */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Stats</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Today's Attendance</span>
+                        <span className="text-lg font-bold text-green-600">94.2%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Active Classes</span>
+                        <span className="text-lg font-bold text-blue-600">28</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Pending Tasks</span>
+                        <span className="text-lg font-bold text-orange-600">12</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">System Health</span>
+                        <span className="text-lg font-bold text-green-600">98%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Activity Section */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
+                    {recentActivities.length > 0 && (
+                      <button onClick={clearActivities} className="text-sm text-red-500 hover:text-red-700 font-medium">Clear All</button>
+                    )}
+                  </div>
+                  <div className="space-y-4 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                    {recentActivities.length > 0 ? (
+                      recentActivities.map(activity => (
+                        <EventItem key={activity.id} title={activity.title} time={activity.time} />
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm text-center py-4">No recent activity.</p>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
 
             {activeView === 'verification' && (
@@ -833,25 +832,24 @@ const ModernAdminDashboard = ({ onLogout }) => {
                         <div key={request.id} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex items-center gap-2">
-                                {request.status === 'approved' ? (
-                                  <CheckCircle size={16} className="text-green-600" />
-                                ) : (
-                                  <XCircle size={16} className="text-red-600" />
-                                )}
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded uppercase ${
-                                  request.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                              {request.status === 'approved' ? (
+                                <CheckCircle size={16} className="text-green-600" />
+                              ) : (
+                                <XCircle size={16} className="text-red-600" />
+                              )}
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded uppercase ${request.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                 }`}>
-                                  {request.status}
-                                </span>
-                                <span className="text-sm font-semibold text-gray-700">
-                                  {request.type === 'add' ? 'Add Student' : 'Remove Student'}
-                                </span>
+                                {request.status}
+                              </span>
+                              <span className="text-sm font-semibold text-gray-700">
+                                {request.type === 'add' ? 'Add Student' : 'Remove Student'}
+                              </span>
                             </div>
                             <span className="text-xs text-gray-400">
                               {new Date(request.reviewedAt || request.createdAt).toLocaleDateString()}
                             </span>
                           </div>
-                          
+
                           <div className="pl-6">
                             <p className="text-sm text-gray-600 mb-1">
                               <strong>Teacher:</strong> {request.teacherName}
@@ -894,13 +892,13 @@ const ModernAdminDashboard = ({ onLogout }) => {
             <h3 className="text-xl font-bold text-gray-900 mb-2">Logout?</h3>
             <p className="text-gray-600 mb-6">Are you sure you want to logout from your account?</p>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setShowLogoutModal(false)}
                 className="flex-1 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmLogout}
                 className="flex-1 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
               >
@@ -921,7 +919,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
                 <X size={24} />
               </button>
             </div>
-            
+
             <form onSubmit={handleRegisterUser} className="p-6 space-y-4">
               {successMessage && (
                 <div className="p-4 bg-green-50 text-green-700 rounded-xl flex items-center gap-2">
@@ -941,7 +939,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
                   <select
                     value={registerFormData.role}
-                    onChange={(e) => setRegisterFormData({...registerFormData, role: e.target.value})}
+                    onChange={(e) => setRegisterFormData({ ...registerFormData, role: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   >
                     <option value="student">Student</option>
@@ -952,22 +950,22 @@ const ModernAdminDashboard = ({ onLogout }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
-                  <input type="text" value={registerFormData.firstName} onChange={(e) => setRegisterFormData({...registerFormData, firstName: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                  <input type="text" value={registerFormData.firstName} onChange={(e) => setRegisterFormData({ ...registerFormData, firstName: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                   {registerErrors.firstName && <p className="text-red-500 text-xs mt-1">{registerErrors.firstName}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
-                  <input type="text" value={registerFormData.lastName} onChange={(e) => setRegisterFormData({...registerFormData, lastName: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                  <input type="text" value={registerFormData.lastName} onChange={(e) => setRegisterFormData({ ...registerFormData, lastName: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                   {registerErrors.lastName && <p className="text-red-500 text-xs mt-1">{registerErrors.lastName}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                  <input type="email" value={registerFormData.email} onChange={(e) => setRegisterFormData({...registerFormData, email: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                  <input type="email" value={registerFormData.email} onChange={(e) => setRegisterFormData({ ...registerFormData, email: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                   {registerErrors.email && <p className="text-red-500 text-xs mt-1">{registerErrors.email}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                  <input type="tel" value={registerFormData.phone} onChange={(e) => setRegisterFormData({...registerFormData, phone: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                  <input type="tel" value={registerFormData.phone} onChange={(e) => setRegisterFormData({ ...registerFormData, phone: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                   {registerErrors.phone && <p className="text-red-500 text-xs mt-1">{registerErrors.phone}</p>}
                 </div>
 
@@ -976,12 +974,12 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
-                      <input type="text" value={registerFormData.rollNumber} onChange={(e) => setRegisterFormData({...registerFormData, rollNumber: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                      <input type="text" value={registerFormData.rollNumber} onChange={(e) => setRegisterFormData({ ...registerFormData, rollNumber: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                       {registerErrors.rollNumber && <p className="text-red-500 text-xs mt-1">{registerErrors.rollNumber}</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Class *</label>
-                      <select value={registerFormData.className} onChange={(e) => setRegisterFormData({...registerFormData, className: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                      <select value={registerFormData.className} onChange={(e) => setRegisterFormData({ ...registerFormData, className: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
                         <option value="">Select Class</option>
                         {[...Array(10)].map((_, i) => (
                           <option key={i + 1} value={`${i + 1}`}>
@@ -998,12 +996,12 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
-                      <input type="text" value={registerFormData.designation} onChange={(e) => setRegisterFormData({...registerFormData, designation: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                      <input type="text" value={registerFormData.designation} onChange={(e) => setRegisterFormData({ ...registerFormData, designation: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                       {registerErrors.designation && <p className="text-red-500 text-xs mt-1">{registerErrors.designation}</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-                      <input type="text" value={registerFormData.subject} onChange={(e) => setRegisterFormData({...registerFormData, subject: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                      <input type="text" value={registerFormData.subject} onChange={(e) => setRegisterFormData({ ...registerFormData, subject: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                       {registerErrors.subject && <p className="text-red-500 text-xs mt-1">{registerErrors.subject}</p>}
                     </div>
                   </>
@@ -1013,12 +1011,12 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   <>
                     <div className="md:col-span-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1 whitespace-nowrap">Child Name *</label>
-                      <input type="text" value={registerFormData.childName} onChange={(e) => setRegisterFormData({...registerFormData, childName: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                      <input type="text" value={registerFormData.childName} onChange={(e) => setRegisterFormData({ ...registerFormData, childName: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                       {registerErrors.childName && <p className="text-red-500 text-xs mt-1">{registerErrors.childName}</p>}
                     </div>
                     <div className="md:col-span-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1 whitespace-nowrap">Relationship *</label>
-                      <select value={registerFormData.relationship} onChange={(e) => setRegisterFormData({...registerFormData, relationship: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                      <select value={registerFormData.relationship} onChange={(e) => setRegisterFormData({ ...registerFormData, relationship: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
                         <option value="">Select...</option>
                         <option value="Father">Father</option>
                         <option value="Mother">Mother</option>
@@ -1028,7 +1026,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1 whitespace-nowrap">Child's Class *</label>
-                      <select value={registerFormData.className} onChange={(e) => setRegisterFormData({...registerFormData, className: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                      <select value={registerFormData.className} onChange={(e) => setRegisterFormData({ ...registerFormData, className: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
                         <option value="">Select Class</option>
                         {[...Array(10)].map((_, i) => (
                           <option key={i + 1} value={`${i + 1}`}>
@@ -1044,7 +1042,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
                 {registerFormData.role === 'staff' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
-                    <input type="text" value={registerFormData.designation} onChange={(e) => setRegisterFormData({...registerFormData, designation: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
+                    <input type="text" value={registerFormData.designation} onChange={(e) => setRegisterFormData({ ...registerFormData, designation: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" />
                     {registerErrors.designation && <p className="text-red-500 text-xs mt-1">{registerErrors.designation}</p>}
                   </div>
                 )}
@@ -1067,9 +1065,8 @@ const ModernAdminDashboard = ({ onLogout }) => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all scale-100">
             <div className="p-6">
               <div className="flex flex-col items-center text-center mb-6">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
-                  confirmModal.type === 'approve' ? 'bg-green-100' : 'bg-red-100'
-                }`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${confirmModal.type === 'approve' ? 'bg-green-100' : 'bg-red-100'
+                  }`}>
                   {confirmModal.type === 'approve' ? (
                     <CheckCircle className="text-green-600" size={24} />
                   ) : (
@@ -1109,11 +1106,10 @@ const ModernAdminDashboard = ({ onLogout }) => {
                   <button
                     onClick={handleConfirmAction}
                     disabled={loading}
-                    className={`flex-1 px-4 py-2 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
-                      confirmModal.type === 'approve' 
-                        ? 'bg-green-600 hover:bg-green-700' 
+                    className={`flex-1 px-4 py-2 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${confirmModal.type === 'approve'
+                        ? 'bg-green-600 hover:bg-green-700'
                         : 'bg-red-600 hover:bg-red-700'
-                    }`}
+                      }`}
                   >
                     {loading ? 'Processing...' : (confirmModal.type === 'approve' ? 'Confirm Approve' : 'Confirm Reject')}
                   </button>
@@ -1145,11 +1141,10 @@ const NavItem = ({ icon, label, active, onClick, badge }) => (
 const SubNavItem = ({ label, onClick, active }) => (
   <button
     onClick={onClick}
-    className={`flex items-center w-full pl-14 pr-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-      active
+    className={`flex items-center w-full pl-14 pr-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${active
         ? 'text-sky-600 font-bold bg-sky-50'
         : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-    }`}
+      }`}
   >
     <span className={`w-1.5 h-1.5 rounded-full mr-3 ${active ? 'bg-sky-600' : 'bg-gray-300'}`}></span>
     {label}
