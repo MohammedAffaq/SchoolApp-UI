@@ -43,7 +43,7 @@ export default function TeacherDashboard() {
       }
       const token = currentUser?.token;
 
-      const response = await fetch('http://localhost:5000/api/student-requests', {
+      const response = await fetch('http://localhost:5001/api/student-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ export default function TeacherDashboard() {
       }
       const token = currentUser?.token;
 
-      const response = await fetch('http://localhost:5000/api/student-requests', {
+      const response = await fetch('http://localhost:5001/api/student-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ type: 'delete', studentData: { studentId: deleteStudentRequest.studentId }, reason: deleteStudentRequest.reason }),
@@ -436,3 +436,4 @@ export default function TeacherDashboard() {
     </div>
   );
 }
+

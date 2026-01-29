@@ -78,7 +78,7 @@ const NotificationsPage = ({ onLogout }) => {
   React.useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/student-requests');
+        const response = await fetch('http://localhost:5001/api/student-requests');
         const result = await response.json();
         if (result.success) {
           setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
@@ -96,7 +96,7 @@ const NotificationsPage = ({ onLogout }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await fetch('http://localhost:5000/api/notifications/flag', {
+        const response = await fetch('http://localhost:5001/api/notifications/flag', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -133,7 +133,7 @@ const NotificationsPage = ({ onLogout }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:5000/api/notifications/read-all', {
+      const response = await fetch('http://localhost:5001/api/notifications/read-all', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

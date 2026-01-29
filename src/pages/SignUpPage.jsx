@@ -132,7 +132,7 @@ export default function SignUpPage() {
     setLoading(true);
 
     // Call backend API for admin registration
-    fetch('/api/admin/register', {
+    fetch('http://localhost:5001/api/admin/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -379,8 +379,8 @@ export default function SignUpPage() {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all ${loading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-teal-600 hover:shadow-lg transform hover:scale-105'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-600 to-teal-600 hover:shadow-lg transform hover:scale-105'
                   }`}
               >
                 {loading ? 'Creating Account...' : 'Create Account'}

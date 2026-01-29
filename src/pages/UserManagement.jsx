@@ -55,7 +55,7 @@ export default function UserManagement() {
 
   const loadUsersFromAPI = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/users');
+      const response = await fetch('http://localhost:5001/api/users');
       const result = await response.json();
 
       if (result.success) {
@@ -220,7 +220,7 @@ export default function UserManagement() {
     setSubmitLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch('http://localhost:5001/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -865,3 +865,4 @@ export default function UserManagement() {
     </div>
   );
 }
+

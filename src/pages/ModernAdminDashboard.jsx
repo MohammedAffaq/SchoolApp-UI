@@ -162,7 +162,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/student-requests', {
+      const response = await fetch('http://localhost:5001/api/student-requests', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${currentUser.token}`,
@@ -214,7 +214,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/student-requests/${confirmModal.requestId}/${endpoint}`, {
+      const response = await fetch(`http://localhost:5001/api/student-requests/${confirmModal.requestId}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -293,7 +293,7 @@ const ModernAdminDashboard = ({ onLogout }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch('http://localhost:5001/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1107,8 +1107,8 @@ const ModernAdminDashboard = ({ onLogout }) => {
                     onClick={handleConfirmAction}
                     disabled={loading}
                     className={`flex-1 px-4 py-2 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${confirmModal.type === 'approve'
-                        ? 'bg-green-600 hover:bg-green-700'
-                        : 'bg-red-600 hover:bg-red-700'
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-red-600 hover:bg-red-700'
                       }`}
                   >
                     {loading ? 'Processing...' : (confirmModal.type === 'approve' ? 'Confirm Approve' : 'Confirm Reject')}
@@ -1142,8 +1142,8 @@ const SubNavItem = ({ label, onClick, active }) => (
   <button
     onClick={onClick}
     className={`flex items-center w-full pl-14 pr-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${active
-        ? 'text-sky-600 font-bold bg-sky-50'
-        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+      ? 'text-sky-600 font-bold bg-sky-50'
+      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
       }`}
   >
     <span className={`w-1.5 h-1.5 rounded-full mr-3 ${active ? 'bg-sky-600' : 'bg-gray-300'}`}></span>

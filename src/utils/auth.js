@@ -63,7 +63,7 @@ export const logout = async () => {
 
     if (token && user) {
       // Determine logout endpoint based on user role
-      const logoutEndpoint = user.role === 'admin' ? 'http://localhost:5000/auth/logout' : 'http://localhost:5000/api/logout';
+      const logoutEndpoint = user.role === 'admin' ? 'http://localhost:5001/auth/logout' : 'http://localhost:5001/api/logout';
 
       await fetch(logoutEndpoint, {
         method: 'POST',
@@ -89,3 +89,4 @@ export const logout = async () => {
   localStorage.removeItem('childGrade');
   window.location.href = '/';
 };
+

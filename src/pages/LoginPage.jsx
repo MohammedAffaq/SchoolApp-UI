@@ -26,7 +26,7 @@ const LoginPage = () => {
                           formData.email.toLowerCase().includes('shilpa') ||
                           formData.email.toLowerCase().includes('priya');
 
-      let loginEndpoint = 'http://localhost:5000/api/login';
+      let loginEndpoint = 'http://localhost:5001/api/login';
       let loginData = {
         email: formData.email.toLowerCase(),
         password: formData.password,
@@ -34,7 +34,7 @@ const LoginPage = () => {
 
       // Use admin-specific endpoint for admin logins
       if (isAdminLogin) {
-        loginEndpoint = 'http://localhost:5000/auth/login';
+        loginEndpoint = 'http://localhost:5001/auth/login';
         loginData = {
           ...loginData,
           role: 'ADMIN'

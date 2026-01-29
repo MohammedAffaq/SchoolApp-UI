@@ -53,7 +53,7 @@ const AnalyticsPage = ({ onLogout }) => {
   React.useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/student-requests');
+        const response = await fetch('http://localhost:5001/api/student-requests');
         const result = await response.json();
         if (result.success) {
           setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
@@ -482,3 +482,4 @@ const NavItem = ({ icon, label, active, onClick, badge }) => (
 );
 
 export default AnalyticsPage;
+

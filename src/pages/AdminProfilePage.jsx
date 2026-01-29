@@ -87,7 +87,7 @@ const AdminProfilePage = ({ onLogout }) => {
           return;
         }
 
-        const response = await fetch('http://localhost:5000/admin/profile', {
+        const response = await fetch('http://localhost:5001/admin/profile', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ const AdminProfilePage = ({ onLogout }) => {
   useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/student-requests');
+        const response = await fetch('http://localhost:5001/api/student-requests');
         const result = await response.json();
         if (result.success) {
           setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
@@ -146,7 +146,7 @@ const AdminProfilePage = ({ onLogout }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/admin/profile', {
+      const response = await fetch('http://localhost:5001/admin/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -217,7 +217,7 @@ const AdminProfilePage = ({ onLogout }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/admin/change-password', {
+      const response = await fetch('http://localhost:5001/admin/change-password', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

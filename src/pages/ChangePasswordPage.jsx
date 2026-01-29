@@ -85,7 +85,7 @@ export default function ChangePasswordPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/change-password', {
+      const response = await fetch('http://localhost:5001/api/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -341,3 +341,4 @@ export default function ChangePasswordPage() {
     </div>
   );
 }
+

@@ -131,6 +131,7 @@ const ChatSection = ({ user }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
 
+
   useEffect(() => {
     const currentUserId = user?.id || 'parent-user-id';
     ws.current = new WebSocket(`ws://localhost:8080?userId=${currentUserId}`);
@@ -470,7 +471,7 @@ const ParentDashboard = ({ onLogout }) => {
     phone: '',
     address: ''
   });
-  const [profileLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date('2026-01-01'));
   const [calendarView] = useState('month');
   const [activeReportTab, setActiveReportTab] = useState('internals1');
@@ -694,7 +695,7 @@ const ParentDashboard = ({ onLogout }) => {
 
   const fetchChildrenDetails = async (parentUser) => {
     try {
-      const response = await fetch('http://localhost:5000/api/users');
+      const response = await fetch('http://localhost:5001/api/users');
       const data = await response.json();
 
       if (data.success && parentUser.children) {
@@ -747,7 +748,7 @@ const ParentDashboard = ({ onLogout }) => {
   const fetchMarks = async (studentId) => {
     setMarksLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/marks/${studentId}`);
+      const response = await fetch(`http://localhost:5001/api/marks/${studentId}`);
       const data = await response.json();
       if (data.success) {
         setMarksData(data.marks);
@@ -772,7 +773,7 @@ const ParentDashboard = ({ onLogout }) => {
 
   const handleDownloadReport = () => {
     if (selectedChildId && !String(selectedChildId).startsWith('STU-')) {
-      window.location.href = `http://localhost:5000/api/marks/${selectedChildId}/download`;
+      window.location.href = `http://localhost:5001/api/marks/${selectedChildId}/download`;
     } else {
       // Demo download
       const csvContent = "Subject,Marks,Grade\nMathematics,85,A\nScience,92,A+\nEnglish,78,B+\nHistory,88,A\nArt,95,A+";
@@ -793,7 +794,7 @@ const ParentDashboard = ({ onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/parent/profile', {
+      const response = await fetch('http://localhost:5001/parent/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -865,7 +866,7 @@ const ParentDashboard = ({ onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/parent/change-password', {
+      const response = await fetch('http://localhost:5001/parent/change-password', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -2148,3 +2149,4 @@ const ParentDashboard = ({ onLogout }) => {
 };
 
 export default ParentDashboard;
+

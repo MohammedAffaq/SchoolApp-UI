@@ -77,7 +77,7 @@ const ParentsPage = ({ onLogout }) => {
   React.useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/student-requests');
+        const response = await fetch('http://localhost:5001/api/student-requests');
         const result = await response.json();
         if (result.success) {
           setPendingRequestsCount(result.requests.filter(req => req.status === 'pending').length);
@@ -329,7 +329,7 @@ const ParentsPage = ({ onLogout }) => {
 
     try {
       // Call backend API to register user and send email
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch('http://localhost:5001/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -932,3 +932,4 @@ const NavItem = ({ icon, label, active, onClick, badge }) => (
 );
 
 export default ParentsPage;
+
